@@ -95,7 +95,7 @@ public class APIController {
     }
 
     public static String getLuckyArticle() {
-        String randomQueryString = "action=query&format=json&list=random&rnlimit=1";
+        // NOTE @shashankmanjunath: Leaving this one for @VaibhavGarg to do
         return null;
     }
 
@@ -108,7 +108,6 @@ public class APIController {
         params.put("limit", String.valueOf(numReturns));
 
         URL queryURLWithParams = addParamsToURL(queryURL, params);
-        // URL queryURLWithParams = checkURLFormation("https://api.wikimedia.org/core/v1/wikipedia/en/search/page?q=solar+system&limit=1");
 
         Log.e("log", queryURLWithParams.toString());
         String apiResponse = getRequest(queryURLWithParams);
