@@ -11,10 +11,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class APIController {
     private static String baseURLString = "https://api.wikimedia.org/feed/v1/wikipedia/en/";
+    private static String searchURLString = "https://api.wikimedia.org/core/v1/wikipedia/en/search/page";
 
     public static String getRequest(URL url) {
         try {
@@ -60,18 +62,62 @@ public class APIController {
         return null;
     }
 
+    public static URL addParamsToURL(URL url, Map<String, String> params) {
+        // NOTE @shashankmanjunath: There must be an easier way to do this, but I can't find it....
+        StringBuilder urlStringBuilder = new StringBuilder(url.toString() + "?");
+        int num_steps = params.size();
+        int counter = 1;
+        for (Map.Entry<String, String> paramIter: params.entrySet()) {
+            urlStringBuilder.append(paramIter.getKey().replace(" ", "+"));
+            urlStringBuilder.append("=");
+            urlStringBuilder.append(paramIter.getValue().replace(" ", "+"));
+
+            if (counter != num_steps) {
+                urlStringBuilder.append("&");
+                counter += 1;
+            }
+        }
+        String urlString = urlStringBuilder.toString();
+        URL urlWithParams = checkURLFormation(urlString);
+        return urlWithParams;
+    }
+
     public static String getDailyArticles() {
         // Returns JSON string data of daily article for the current date
         SimpleDateFormat today = new SimpleDateFormat("yyyy/MM/dd");
         String todayString = today.format(new Date());
         URL queryURL = checkURLFormation(baseURLString + "featured/" + todayString);
+
         Log.e("log", queryURL.toString());
         String apiResponse = getRequest(queryURL);
         Log.e("log", apiResponse);
         return apiResponse;
     }
 
-    public static String getSearchResult(String queryString) {
+    public static String getLuckyArticle() {
+        String randomQueryString = "action=query&format=json&list=random&rnlimit=1";
         return null;
+    }
+
+
+    public static String getSearchResult(String queryString, int numReturns) {
+        URL queryURL = checkURLFormation(searchURLString);
+        Map<String, String> params = new HashMap<String, String>();
+
+        params.put("q", queryString);
+        params.put("limit", String.valueOf(numReturns));
+
+        URL queryURLWithParams = addParamsToURL(queryURL, params);
+        // URL queryURLWithParams = checkURLFormation("https://api.wikimedia.org/core/v1/wikipedia/en/search/page?q=solar+system&limit=1");
+
+        Log.e("log", queryURLWithParams.toString());
+        String apiResponse = getRequest(queryURLWithParams);
+
+        if (apiResponse == null) {
+            Log.e("log", "Empty return from API!");
+        } else {
+            Log.e("log", apiResponse);
+        }
+        return apiResponse;
     }
 }

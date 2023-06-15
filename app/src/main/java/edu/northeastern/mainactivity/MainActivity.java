@@ -19,10 +19,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     class APIThread implements Runnable {
-        // NOTE @smanjunath: This APIThread class is just for testing
+        // NOTE @shashankmanjunath: This APIThread class is just for testing
         @Override
         public void run() {
-            dailyString = APIController.getDailyArticles();
+            // dailyString = APIController.getDailyArticles();
+            dailyString = APIController.getSearchResult("cantor set", 3);
         }
     }
 }
