@@ -1,6 +1,6 @@
 package edu.northeastern.mainactivity;
 
-import android.os.Handler;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -14,14 +14,11 @@ import java.util.Date;
 import java.util.List;
 
 public class APIController {
-
-    private static Handler apiHandler = new Handler();
     private static String baseURLString = "https://api.wikimedia.org/feed/v1/wikipedia/en/";
 
     public static String getRequest(URL url) {
-        HttpURLConnection conn = null;
         try {
-            conn = (HttpURLConnection) url.openConnection();
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setDoInput(true);
 
@@ -64,19 +61,17 @@ public class APIController {
     }
 
     public static String getDailyArticles() {
-        SimpleDateFormat today = new SimpleDateFormat("YYYY/mm/dd");
+        // Returns JSON string data of daily article for the current date
+        SimpleDateFormat today = new SimpleDateFormat("yyyy/MM/dd");
         String todayString = today.format(new Date());
         URL queryURL = checkURLFormation(baseURLString + "featured/" + todayString);
-
-        String response = getRequest(queryURL);
-        return response;
+        Log.e("log", queryURL.toString());
+        String apiResponse = getRequest(queryURL);
+        Log.e("log", apiResponse);
+        return apiResponse;
     }
 
-    public static List<String> getLuckyArticle() {
-        return null;
-    }
-
-    public static List<String> getSearchResult(String queryString) {
+    public static String getSearchResult(String queryString) {
         return null;
     }
 }
