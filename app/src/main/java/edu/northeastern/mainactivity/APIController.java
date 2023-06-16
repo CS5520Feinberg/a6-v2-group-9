@@ -88,9 +88,7 @@ public class APIController {
         String todayString = today.format(new Date());
         URL queryURL = checkURLFormation(baseURLString + "featured/" + todayString);
 
-        Log.e("log", queryURL.toString());
         String apiResponse = getRequest(queryURL);
-        Log.e("log", apiResponse);
         return apiResponse;
     }
 
@@ -109,13 +107,14 @@ public class APIController {
 
         URL queryURLWithParams = addParamsToURL(queryURL, params);
 
-        Log.e("log", queryURLWithParams.toString());
+        Log.d("log", "Calling API at: " + queryURLWithParams.toString());
         String apiResponse = getRequest(queryURLWithParams);
 
         if (apiResponse == null) {
-            Log.e("log", "Empty return from API!");
+            Log.d("log", "Empty return from API!");
         } else {
-            Log.e("log", apiResponse);
+            // Log.e("log", apiResponse);
+            Log.d("log", "API response received");
         }
         return apiResponse;
     }
