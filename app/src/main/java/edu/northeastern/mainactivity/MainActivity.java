@@ -23,7 +23,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             // dailyString = APIController.getDailyArticles();
-            dailyString = APIController.getSearchResult("cantor set", 3);
+            dailyString = APIMiddleware.searchArticles("cantor set", 3, getApplicationContext());
+            Log.d("API Response", dailyString);
         }
     }
 }
