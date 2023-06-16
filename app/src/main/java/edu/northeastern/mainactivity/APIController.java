@@ -96,6 +96,7 @@ public class APIController {
 
     public static String getLuckyArticle() {
         // NOTE @shashankmanjunath: Leaving this one for @VaibhavGarg to do
+
         return null;
     }
 
