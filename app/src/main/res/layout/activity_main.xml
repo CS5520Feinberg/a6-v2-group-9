@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -29,7 +28,7 @@
             android:layout_width="250dp"
             android:layout_height="50dp"
             android:id="@+id/search_bar"
-            android:text="Search">
+            android:hint="Search">
         </EditText>
 
         <View
@@ -61,12 +60,24 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1.5"/>
+            android:layout_weight="1.6"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Daily Article"
+            android:textSize="25dp"
+            android:gravity="center"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            ></androidx.recyclerview.widget.RecyclerView>
+            android:id="@+id/dailyRV" />
 
         <View
             android:layout_width="match_parent"
