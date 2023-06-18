@@ -26,6 +26,14 @@ public class APIMiddleware {
         return dailyArticlesJson;
     }
 
+    public static JsonObject getRandomArticle(Context context) {
+        String apiResponse = APIController.getLuckyArticle();
+        handleErrorResponse(context, apiResponse);
+        JsonObject jsonReturn = (JsonObject) JsonParser.parseString(apiResponse);
+        return jsonReturn;
+    }
+
+
     public static JsonArray searchArticles(String queryString, int numReturns, Context context) {
         String apiResponse = APIController.getSearchResult(queryString, numReturns);
         handleErrorResponse(context, apiResponse);

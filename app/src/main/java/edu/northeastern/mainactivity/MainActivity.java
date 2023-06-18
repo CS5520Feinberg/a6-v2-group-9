@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -55,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
             //JsonArray jsonSearch = APIMiddleware.searchArticles("cantor set", 3, getApplicationContext());
             // JsonObject json = (JsonObject) JsonParser.parseString(dailyString);
             //Log.d("API Response", jsonSearch.get(0).toString());
+
+            JsonObject json = APIMiddleware.getRandomArticle(getApplicationContext());
+            Log.d("API response", json.toString());
 
             ArrayList<JsonObject> daily = APIMiddleware.getDailyArticle(getApplicationContext(), 3);
             runOnUiThread(() -> {
