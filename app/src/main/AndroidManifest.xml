@@ -16,7 +16,8 @@
         android:theme="@style/Theme.MainActivity"
         tools:targetApi="31">
         <activity
-            android:name=".Page3"
+            android:name=".SearchResultPageActivity"
+            android:screenOrientation="fullSensor"
             android:exported="false" />
         <activity
             android:name=".Page2"

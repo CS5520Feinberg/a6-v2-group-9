@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -27,7 +29,7 @@
             android:layout_width="250dp"
             android:layout_height="50dp"
             android:id="@+id/search_bar"
-            android:hint="Search">
+            android:text="Search">
         </EditText>
 
         <View
@@ -44,37 +46,27 @@
                 android:id="@+id/search_button"
                 android:layout_width="165dp"
                 android:layout_height="wrap_content"
-                android:text="SEARCH" />
+                android:text="SEARCH"
+                android:onClick="goToResultPage"/>
 
             <Button
                 android:id="@+id/lucky_button"
                 android:layout_width="165dp"
                 android:layout_height="wrap_content"
-                android:text="Feeling lucky"/>
+                android:text="Feeling lucky"
+                android:onClick="feelingLucky"/>
 
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1.6"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Daily Article"
-            android:textSize="25dp"
-            android:gravity="center"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="2" />
+            android:layout_weight="1.5"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/dailyRV" />
+            ></androidx.recyclerview.widget.RecyclerView>
 
         <View
             android:layout_width="match_parent"
