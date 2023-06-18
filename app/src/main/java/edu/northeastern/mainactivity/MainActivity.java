@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
@@ -52,13 +53,16 @@ public class MainActivity extends AppCompatActivity {
         @SuppressLint("NotifyDataSetChanged")
         @Override
         public void run() {
-            // JsonObject dailyArticle = APIMiddleware.getDailyArticle(getApplicationContext());
-            //JsonArray jsonSearch = APIMiddleware.searchArticles("cantor set", 3, getApplicationContext());
-            // JsonObject json = (JsonObject) JsonParser.parseString(dailyString);
-            //Log.d("API Response", jsonSearch.get(0).toString());
+            // Example showing extraction of URLs from JsonArray
+            JsonArray jsonSearch = APIMiddleware.searchArticles("cantor set", 3, getApplicationContext());
+            for (int i=0; i < jsonSearch.size(); i++) {
+                JsonObject idxObject = (JsonObject) jsonSearch.get(i);
+                Log.d("Search URL", String.valueOf(idxObject.get("url")));
+            }
 
+            // Example showing random article query
             JsonObject json = APIMiddleware.getRandomArticle(getApplicationContext());
-            Log.d("API response", json.toString());
+            Log.d("Random Article data", json.toString());
 
             ArrayList<JsonObject> daily = APIMiddleware.getDailyArticle(getApplicationContext(), 3);
             runOnUiThread(() -> {
