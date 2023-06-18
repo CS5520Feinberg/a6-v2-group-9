@@ -5,7 +5,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Scanner;
 
-class IAmFeelingLucky {
+class FeelingLucky {
     private static final String WIKIMEDIA_API_URL = "https://en.wikipedia.org/w/api.php"; // Replace with the actual Wikimedia API URL
 
 //    public static void main(String[] args) {
