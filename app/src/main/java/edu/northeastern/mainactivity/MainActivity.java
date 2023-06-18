@@ -2,13 +2,15 @@ package edu.northeastern.mainactivity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+
 
 public class MainActivity extends AppCompatActivity {
     private Handler stringHandler = new Handler();
@@ -31,6 +33,12 @@ public class MainActivity extends AppCompatActivity {
             // JsonObject json = (JsonObject) JsonParser.parseString(dailyString);
             Log.d("API Response", jsonSearch.get(0).toString());
         }
+    }
+
+
+    public void goToResultPage(View view){
+        Intent intent = new Intent(MainActivity.this, SearchResultPageActivity.class);
+        startActivity(intent);
     }
 }
 
