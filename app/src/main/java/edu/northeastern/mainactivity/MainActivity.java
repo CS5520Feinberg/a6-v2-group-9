@@ -61,9 +61,9 @@ public class MainActivity extends AppCompatActivity {
             // JsonObject json = (JsonObject) JsonParser.parseString(dailyString);
             //Log.d("API Response", jsonSearch.get(0).toString());
 
-            JsonObject daily = APIMiddleware.getDailyArticle(getApplicationContext());
+            ArrayList<JsonObject> daily = APIMiddleware.getDailyArticle(getApplicationContext(), 3);
             runOnUiThread(() -> {
-                dailyList.add(daily);
+                dailyList.add(daily.get(0));
                 dailyArticleAdapter.notifyDataSetChanged();
             });
         }

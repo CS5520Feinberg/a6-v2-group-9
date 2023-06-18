@@ -11,18 +11,24 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class APIMiddleware {
-    static Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    static JsonParser parser = new JsonParser();
+    public static ArrayList<JsonObject> getDailyArticle(Context context, int numArticles) {
+        ArrayList<String> apiResponse = APIController.getDailyArticles(numArticles);
+        ArrayList<JsonObject> dailyArticlesJson = new ArrayList<JsonObject>();
 
-    public static JsonObject getDailyArticle(Context context) {
-        String apiResponse = APIController.getDailyArticles();
-        handleErrorResponse(context, apiResponse);
-        JsonObject jsonArticle = (JsonObject) JsonParser.parseString(apiResponse);
-        return (JsonObject) JsonParser.parseString(String.valueOf(jsonArticle.get("tfa")));
+        for (int i=0; i<apiResponse.size(); i++) {
+            String singleApiResponse = apiResponse.get(i);
+            handleErrorResponse(context, singleApiResponse);
+            JsonObject jsonArticle = (JsonObject) JsonParser.parseString(singleApiResponse);
+            String featureArticle = String.valueOf(jsonArticle.get("tfa"));
+            dailyArticlesJson.add((JsonObject) JsonParser.parseString(featureArticle));
+        }
+        return dailyArticlesJson;
     }
 
     public static JsonArray searchArticles(String queryString, int numReturns, Context context) {
