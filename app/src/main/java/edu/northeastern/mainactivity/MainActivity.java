@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -18,6 +19,9 @@ import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.widget.TextView;
+import com.google.gson.JsonArray;
+import edu.northeastern.mainactivity.helpers.FeelingLucky;
 
 public class MainActivity extends AppCompatActivity {
     private Handler stringHandler = new Handler();
@@ -64,5 +68,19 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+
+
+    public void goToResultPage(View view){
+        Intent intent = new Intent(MainActivity.this, SearchResultPageActivity.class);
+        startActivity(intent);
+    }
+
+    public void feelingLucky(View view){
+        FeelingLucky lucky  = new FeelingLucky();
+        Thread thread = new Thread(lucky);
+        thread.start();
+
+    }
+
 }
 
