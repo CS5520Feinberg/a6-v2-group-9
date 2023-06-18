@@ -22,7 +22,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="A6 HW"
-            android:id="@+id/page_title">
+            android:id="@+id/page_title"
+            android:textSize="32dp">
         </TextView>
 
         <EditText
@@ -66,7 +67,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Daily article"
-            android:id="@+id/page_daily_article">
+            android:id="@+id/page_daily_article"
+            android:textSize="26dp">
         </TextView>
 
         <androidx.recyclerview.widget.RecyclerView

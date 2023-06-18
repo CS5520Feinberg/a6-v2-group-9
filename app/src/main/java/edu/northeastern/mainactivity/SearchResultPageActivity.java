@@ -64,15 +64,15 @@ public class SearchResultPageActivity extends AppCompatActivity {
 
         @Override
         public void run() {
-            JsonArray jsonSearch = APIMiddleware.searchArticles(query, 3, getApplicationContext());
-            //Log.i("test", "test me something");
+            JsonArray jsonSearch = APIMiddleware.searchArticles(query, 5, getApplicationContext());
+            Log.i("test", "test me something");
 
             for (int i = 0; i < jsonSearch.size(); i++) {
 
                 JsonObject article = (JsonObject) jsonSearch.get(i);
 
                 if (!(article.get("id") == null) ) {
-                    //Log.i("test",String.valueOf(jsonSearch.size() ));
+                    Log.i("test",String.valueOf(jsonSearch.size() ));
                     searchResultList.add(article);
                 }
                 //Log.i("test", String.valueOf(jsonSearch.size()));
