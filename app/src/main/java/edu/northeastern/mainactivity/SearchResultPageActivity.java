@@ -5,6 +5,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.TextView;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +20,15 @@ import edu.northeastern.mainactivity.entity.Link;
 
 public class SearchResultPageActivity extends AppCompatActivity {
 
+    private TextView searchResultTV;
     private static final String KEY_LINKS_LIST = "linksList";
 
     RecyclerView linksArticleRecyclerView;
-    List<Link> links = new ArrayList<>();
+    List<Link>  links = new ArrayList<>();
+
+    List<JsonObject> searchResultList = new ArrayList<>();
+    private String query;
+    private SearchArticleAdapter searchArticleAdapter;
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -31,23 +42,49 @@ public class SearchResultPageActivity extends AppCompatActivity {
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_LINKS_LIST)) {
             links = (List<Link>) savedInstanceState.getSerializable(KEY_LINKS_LIST);
         }
+
         linksArticleRecyclerView = findViewById(R.id.recycler_view_result_page);
         linksArticleRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        SearchArticleAdapter searchArticleAdapter = new SearchArticleAdapter(getLinks(),this);
+        searchArticleAdapter = new SearchArticleAdapter(searchResultList,this);
         linksArticleRecyclerView.setAdapter(searchArticleAdapter);
 
-
+        searchResultTV = findViewById(R.id.result_details_text_view);
+        this.query = getIntent().getStringExtra("queryString");
+        searchResultTV.setText(query);
+        testThread run = new testThread();
+        new Thread(run).start();
+/*        JsonArray jsonSearch = APIMiddleware.searchArticles(query, 5, getApplicationContext());
+        for (int i = 0; i < jsonSearch.size(); i++) {
+            searchResultList.add((JsonObject) jsonSearch.get(i));
+        }
+        searchArticleAdapter.notifyDataSetChanged();*/
     }
-    // Whoever implemented the thread has to get the links here
-    private List<Link> getLinks() {
-        Link link1 = new Link("The Great Java","https://www.google.com","The best book ever wrriten on Java");
-        Link link2 = new Link("The Great Java","https://www.google.com","The best book ever wrriten on Java");
-        Link link3 = new Link("The Great Java","https://www.google.com","The best book ever wrriten on Java");
 
-        List<Link> lists = new ArrayList<>();
-        lists.add(link1);
-        lists.add(link2);
-        lists.add(link3);
-        return lists;
+    class testThread implements Runnable {
+
+        @Override
+        public void run() {
+            JsonArray jsonSearch = APIMiddleware.searchArticles(query, 5, getApplicationContext());
+            Log.i("test", "test me something");
+
+            for (int i = 0; i < jsonSearch.size(); i++) {
+
+                JsonObject article = (JsonObject) jsonSearch.get(i);
+
+                if (!(article.get("id") == null) ) {
+                    Log.i("test",String.valueOf(jsonSearch.size() ));
+                    searchResultList.add(article);
+                }
+                //Log.i("test", String.valueOf(jsonSearch.size()));
+            }
+            //searchResultList.add((JsonObject) jsonSearch.get(0));
+            //searchResultList.add((JsonObject) jsonSearch.get(1));
+            runOnUiThread(() -> {
+/*                for (int i = 0; i < jsonSearch.size(); i++) {
+                    searchResultList.add((JsonObject) jsonSearch.get(i));
+                }*/
+                searchArticleAdapter.notifyDataSetChanged();
+            });
+        }
     }
 }

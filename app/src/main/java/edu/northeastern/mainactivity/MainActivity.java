@@ -44,6 +44,13 @@ public class MainActivity extends AppCompatActivity {
         dailyRV.setLayoutManager(new LinearLayoutManager(this));
         dailyRV.setAdapter(dailyArticleAdapter);
 
+        searchButton.setOnClickListener(v -> {
+            String query = searchBar.getText().toString();
+            Intent intent = new Intent(MainActivity.this, SearchResultPageActivity.class);
+            intent.putExtra("queryString", query);
+            startActivity(intent);
+        });
+
         APIThread runnableAPIThread = new APIThread();
         new Thread(runnableAPIThread).start();
     }
@@ -69,14 +76,15 @@ public class MainActivity extends AppCompatActivity {
                 dailyList.add(daily.get(0));
                 dailyArticleAdapter.notifyDataSetChanged();
             });
+            //searchBar.setText(jsonSearch.toString());
         }
     }
 
-
+/*
     public void goToResultPage(View view){
         Intent intent = new Intent(MainActivity.this, SearchResultPageActivity.class);
         startActivity(intent);
-    }
+    }*/
 
     public void feelingLucky(View view){
         FeelingLucky lucky  = new FeelingLucky();
