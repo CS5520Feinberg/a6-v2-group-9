@@ -6,6 +6,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 public class MainActivity extends AppCompatActivity {
     private Handler stringHandler = new Handler();
     private static String dailyString;
@@ -22,9 +26,10 @@ public class MainActivity extends AppCompatActivity {
         // NOTE @shashankmanjunath: This APIThread class is just for testing
         @Override
         public void run() {
-            // dailyString = APIController.getDailyArticles();
-            dailyString = APIMiddleware.searchArticles("cantor set", 3, getApplicationContext());
-            Log.d("API Response", dailyString);
+            // JsonObject dailyArticle = APIMiddleware.getDailyArticle(getApplicationContext());
+            JsonArray jsonSearch = APIMiddleware.searchArticles("cantor set", 3, getApplicationContext());
+            // JsonObject json = (JsonObject) JsonParser.parseString(dailyString);
+            Log.d("API Response", jsonSearch.get(0).toString());
         }
     }
 }
