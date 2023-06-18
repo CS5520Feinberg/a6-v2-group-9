@@ -24,7 +24,8 @@ Jialin Huang, Kevin Lin, Akshat Alkesh Gandhi, Vaibhav Garg, Shashank Manjunath
   - While calling these methods in an activity, use "getActivityContext()" to send context in the params.
 
 ## Frontend Notes 
--- Have UI design and xml files ready as we discussed in the call
--- Have a daily article section on the landing page (Page1)
--- Have feeling lucky button, like what Google's feeling lucky button, does (Page1)
--- Have recyclerview implementation for search results
+
+- Have UI design and xml files ready as we discussed in the call
+- Have a daily article section on the landing page (Page1)
+- Have feeling lucky button, like what Google's feeling lucky button, does (Page1)
+- Have recyclerview implementation for search results
