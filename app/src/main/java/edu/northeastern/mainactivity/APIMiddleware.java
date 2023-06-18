@@ -9,6 +9,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.net.URL;
 import java.util.ArrayList;
 
 public class APIMiddleware {
@@ -28,11 +29,14 @@ public class APIMiddleware {
         return dailyArticlesJson;
     }
 
-    public static JsonObject getRandomArticle(Context context) {
+    public static String getRandomArticle(Context context) {
         String apiResponse = APIController.getLuckyArticle();
         handleErrorResponse(context, apiResponse);
         JsonObject jsonReturn = (JsonObject) JsonParser.parseString(apiResponse);
-        return jsonReturn;
+        JsonObject jsonContent = (JsonObject) jsonReturn.get("content_urls");
+        JsonObject mobileContent = (JsonObject) jsonContent.get("desktop");
+        String mobileURL = String.valueOf(mobileContent.get("page")).replace("\"", "");
+        return mobileURL;
     }
 
 

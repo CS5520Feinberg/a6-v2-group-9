@@ -55,7 +55,7 @@ public class APIController {
         return "";
     }
 
-    private static URL checkURLFormation(String urlString) {
+    public static URL checkURLFormation(String urlString) {
         try {
             URL target_url = new URL(urlString);
             return target_url;

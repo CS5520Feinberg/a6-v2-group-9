@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -16,6 +17,7 @@ import android.widget.EditText;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import edu.northeastern.mainactivity.helpers.FeelingLucky;
@@ -25,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
     private static String dailyString;
     private Button searchButton;
     private Button luckyButton;
+    private String luckyURL;
+    private boolean luckySearch = false;
     private EditText searchBar;
     private RecyclerView dailyRV;
     private DailyArticleAdapter dailyArticleAdapter;
@@ -51,46 +55,46 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        luckyButton.setOnClickListener(v -> {
+            luckySearch = true;
+            LuckyThread lucky = new LuckyThread();
+            Thread getURLThread = new Thread(lucky);
+            getURLThread.start();
+
+            try {
+                getURLThread.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            Log.d("log", luckyURL);
+
+            Uri luckyURI = Uri.parse(luckyURL);
+            Intent intent = new Intent(Intent.ACTION_VIEW, luckyURI);
+            startActivity(intent);
+        });
+
         APIThread runnableAPIThread = new APIThread();
         new Thread(runnableAPIThread).start();
     }
 
+    class LuckyThread implements Runnable {
+        public void run() {
+            luckyURL = APIMiddleware.getRandomArticle(getApplicationContext());
+            Log.d("Random Article URL", luckyURL);
+        }
+    }
+
     class APIThread implements Runnable {
-        // NOTE @shashankmanjunath: This APIThread class is just for testing
         @SuppressLint("NotifyDataSetChanged")
         @Override
         public void run() {
-            // Example showing extraction of URLs from JsonArray
-            JsonArray jsonSearch = APIMiddleware.searchArticles("cantor set", 3, getApplicationContext());
-            for (int i=0; i < jsonSearch.size(); i++) {
-                JsonObject idxObject = (JsonObject) jsonSearch.get(i);
-                Log.d("Search URL", String.valueOf(idxObject.get("url")));
-            }
-
-            // Example showing random article query
-            JsonObject json = APIMiddleware.getRandomArticle(getApplicationContext());
-            Log.d("Random Article data", json.toString());
-
             ArrayList<JsonObject> daily = APIMiddleware.getDailyArticle(getApplicationContext(), 3);
             runOnUiThread(() -> {
                 dailyList.add(daily.get(0));
                 dailyArticleAdapter.notifyDataSetChanged();
             });
-            //searchBar.setText(jsonSearch.toString());
         }
-    }
-
-/*
-    public void goToResultPage(View view){
-        Intent intent = new Intent(MainActivity.this, SearchResultPageActivity.class);
-        startActivity(intent);
-    }*/
-
-    public void feelingLucky(View view){
-        FeelingLucky lucky  = new FeelingLucky();
-        Thread thread = new Thread(lucky);
-        thread.start();
-
     }
 
 }
