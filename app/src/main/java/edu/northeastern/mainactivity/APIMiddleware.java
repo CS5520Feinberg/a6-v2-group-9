@@ -9,7 +9,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.net.URL;
 import java.util.ArrayList;
 
 public class APIMiddleware {
@@ -51,7 +50,6 @@ public class APIMiddleware {
         for (int i=0; i<pages.size(); i++) {
             JsonObject pagesElement = (JsonObject) pages.get(i);
             String key = String.valueOf(pagesElement.get("key")).replace("\"", "");
-            Log.d("API", String.valueOf(key));
             pagesElement.addProperty("url", String.format("%s%s", articleURLBase, key));
         }
 
@@ -68,14 +66,5 @@ public class APIMiddleware {
             Log.e("log","Failed to fetch data. Please check your internet connection.");
             showErrorToast(context,"Failed to fetch data. Please check your internet connection.");
         }
-        // } else {
-        //     // Handle error responses from the API
-        //     // You can parse the JSON response and check for specific error codes or messages
-        //     // For example:
-        //     if (apiResponse.contains("error")) {
-        //         Log.e("log","An error occurred. Please try again later.");
-        //         showErrorToast(context,"An error occurred. Please try again later.");
-        //     }
-        // }
     }
 }

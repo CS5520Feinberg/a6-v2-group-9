@@ -4,12 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
@@ -35,6 +34,7 @@ public class SearchResultPageActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putSerializable(KEY_LINKS_LIST,new ArrayList<>(links));
     }
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,39 +52,29 @@ public class SearchResultPageActivity extends AppCompatActivity {
         this.query = getIntent().getStringExtra("queryString");
         searchResultTV.setText(query);
         testThread run = new testThread();
-        new Thread(run).start();
-/*        JsonArray jsonSearch = APIMiddleware.searchArticles(query, 5, getApplicationContext());
-        for (int i = 0; i < jsonSearch.size(); i++) {
-            searchResultList.add((JsonObject) jsonSearch.get(i));
+        Thread iterTestThread = new Thread(run);
+
+        iterTestThread.start();
+
+        try {
+            iterTestThread.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
-        searchArticleAdapter.notifyDataSetChanged();*/
+
+        searchArticleAdapter.notifyDataSetChanged();
     }
 
     class testThread implements Runnable {
 
         @Override
         public void run() {
-            JsonArray jsonSearch = APIMiddleware.searchArticles(query, 5, getApplicationContext());
-            Log.i("test", "test me something");
+            JsonArray jsonSearch = APIMiddleware.searchArticles(query, 50, getApplicationContext());
 
             for (int i = 0; i < jsonSearch.size(); i++) {
-
                 JsonObject article = (JsonObject) jsonSearch.get(i);
-
-                if (!(article.get("id") == null) ) {
-                    Log.i("test",String.valueOf(jsonSearch.size() ));
-                    searchResultList.add(article);
-                }
-                //Log.i("test", String.valueOf(jsonSearch.size()));
+                searchResultList.add(article);
             }
-            //searchResultList.add((JsonObject) jsonSearch.get(0));
-            //searchResultList.add((JsonObject) jsonSearch.get(1));
-            runOnUiThread(() -> {
-/*                for (int i = 0; i < jsonSearch.size(); i++) {
-                    searchResultList.add((JsonObject) jsonSearch.get(i));
-                }*/
-                searchArticleAdapter.notifyDataSetChanged();
-            });
         }
     }
 }

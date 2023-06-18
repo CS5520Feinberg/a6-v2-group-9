@@ -9,18 +9,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import edu.northeastern.mainactivity.helpers.FeelingLucky;
 
 public class MainActivity extends AppCompatActivity {
     private Handler stringHandler = new Handler();
@@ -28,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
     private Button searchButton;
     private Button luckyButton;
     private String luckyURL;
-    private boolean luckySearch = false;
     private EditText searchBar;
     private RecyclerView dailyRV;
     private DailyArticleAdapter dailyArticleAdapter;
@@ -56,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         luckyButton.setOnClickListener(v -> {
-            luckySearch = true;
             LuckyThread lucky = new LuckyThread();
             Thread getURLThread = new Thread(lucky);
             getURLThread.start();
@@ -66,8 +59,6 @@ public class MainActivity extends AppCompatActivity {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-
-            Log.d("log", luckyURL);
 
             Uri luckyURI = Uri.parse(luckyURL);
             Intent intent = new Intent(Intent.ACTION_VIEW, luckyURI);
@@ -81,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
     class LuckyThread implements Runnable {
         public void run() {
             luckyURL = APIMiddleware.getRandomArticle(getApplicationContext());
-            Log.d("Random Article URL", luckyURL);
         }
     }
 
