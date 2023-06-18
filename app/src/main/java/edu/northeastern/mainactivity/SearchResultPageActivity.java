@@ -5,9 +5,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
@@ -62,12 +64,21 @@ public class SearchResultPageActivity extends AppCompatActivity {
 
         @Override
         public void run() {
-            JsonArray jsonSearch = APIMiddleware.searchArticles(query, 5, getApplicationContext());
-/*            for (int i = 0; i < jsonSearch.size(); i++) {
-                searchResultList.add((JsonObject) jsonSearch.get(i));
-            }*/
-            searchResultList.add((JsonObject) jsonSearch.get(0));
-            searchResultList.add((JsonObject) jsonSearch.get(1));
+            JsonArray jsonSearch = APIMiddleware.searchArticles(query, 3, getApplicationContext());
+            //Log.i("test", "test me something");
+
+            for (int i = 0; i < jsonSearch.size(); i++) {
+
+                JsonObject article = (JsonObject) jsonSearch.get(i);
+
+                if (!(article.get("id") == null) ) {
+                    //Log.i("test",String.valueOf(jsonSearch.size() ));
+                    searchResultList.add(article);
+                }
+                //Log.i("test", String.valueOf(jsonSearch.size()));
+            }
+            //searchResultList.add((JsonObject) jsonSearch.get(0));
+            //searchResultList.add((JsonObject) jsonSearch.get(1));
             runOnUiThread(() -> {
 /*                for (int i = 0; i < jsonSearch.size(); i++) {
                     searchResultList.add((JsonObject) jsonSearch.get(i));
