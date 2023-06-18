@@ -54,7 +54,7 @@
                 android:layout_width="165dp"
                 android:layout_height="wrap_content"
                 android:text="Feeling lucky"
-                android:onClick="onClick"/>
+                android:onClick="feelingLucky"/>
 
         </LinearLayout>
 

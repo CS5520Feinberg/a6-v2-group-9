@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.google.gson.JsonArray;
 
+import edu.northeastern.mainactivity.helpers.FeelingLucky;
+
 
 public class MainActivity extends AppCompatActivity {
     private Handler stringHandler = new Handler();
@@ -40,5 +42,13 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, SearchResultPageActivity.class);
         startActivity(intent);
     }
+
+    public void feelingLucky(View view){
+        FeelingLucky lucky  = new FeelingLucky();
+        Thread thread = new Thread(lucky);
+        thread.start();
+
+    }
+
 }
 
