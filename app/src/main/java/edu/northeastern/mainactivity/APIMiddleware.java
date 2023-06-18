@@ -5,16 +5,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 // to beautify json response
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 public class APIMiddleware {
     public static ArrayList<JsonObject> getDailyArticle(Context context, int numArticles) {
