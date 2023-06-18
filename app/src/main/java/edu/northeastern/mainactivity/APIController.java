@@ -19,6 +19,7 @@ import java.util.Map;
 public class APIController {
     private static String baseURLString = "https://api.wikimedia.org/feed/v1/wikipedia/en/";
     private static String searchURLString = "https://api.wikimedia.org/core/v1/wikipedia/en/search/page";
+    private static String randomURLString = "https://en.wikipedia.org/api/rest_v1/page/random/summary";
 
     public static String getRequest(URL url) {
         try {
@@ -113,9 +114,9 @@ public class APIController {
     }
 
     public static String getLuckyArticle() {
-        // NOTE @shashankmanjunath: Leaving this one for @VaibhavGarg to do
-
-        return null;
+        URL queryURL = checkURLFormation(randomURLString);
+        String apiResponse = getRequest(queryURL);
+        return apiResponse;
     }
 
 

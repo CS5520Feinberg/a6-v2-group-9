@@ -12,6 +12,8 @@ import com.google.gson.JsonParser;
 import java.util.ArrayList;
 
 public class APIMiddleware {
+    private static String articleURLBase = "https://en.wikipedia.org/wiki/";
+
     public static ArrayList<JsonObject> getDailyArticle(Context context, int numArticles) {
         ArrayList<String> apiResponse = APIController.getDailyArticles(numArticles);
         ArrayList<JsonObject> dailyArticlesJson = new ArrayList<JsonObject>();
@@ -26,11 +28,30 @@ public class APIMiddleware {
         return dailyArticlesJson;
     }
 
+    public static JsonObject getRandomArticle(Context context) {
+        String apiResponse = APIController.getLuckyArticle();
+        handleErrorResponse(context, apiResponse);
+        JsonObject jsonReturn = (JsonObject) JsonParser.parseString(apiResponse);
+        return jsonReturn;
+    }
+
+
     public static JsonArray searchArticles(String queryString, int numReturns, Context context) {
         String apiResponse = APIController.getSearchResult(queryString, numReturns);
         handleErrorResponse(context, apiResponse);
         JsonObject jsonReturn = (JsonObject) JsonParser.parseString(apiResponse);
-        return (JsonArray) jsonReturn.get("pages");
+
+        // Adding URL to JSON for each returned object
+        JsonArray pages = (JsonArray) jsonReturn.get("pages");
+
+        for (int i=0; i<pages.size(); i++) {
+            JsonObject pagesElement = (JsonObject) pages.get(i);
+            String key = String.valueOf(pagesElement.get("key")).replace("\"", "");
+            Log.d("API", String.valueOf(key));
+            pagesElement.addProperty("url", String.format("%s%s", articleURLBase, key));
+        }
+
+        return pages;
     }
     private static void showErrorToast(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
