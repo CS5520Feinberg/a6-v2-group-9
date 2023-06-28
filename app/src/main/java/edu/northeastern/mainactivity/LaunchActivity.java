@@ -1,5 +1,7 @@
 package edu.northeastern.mainactivity;
 
+import static edu.northeastern.mainactivity.LoginActivity.dbTest;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -13,6 +15,8 @@ public class LaunchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
+
+        dbTest();
 
         Button launchA6 = (Button) findViewById(R.id.launch_a6_button);
         launchA6.setOnClickListener(new View.OnClickListener() {
