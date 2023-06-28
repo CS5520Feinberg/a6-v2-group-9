@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -59,14 +60,18 @@ public class LoginActivity {
         });
     }
 
-    public static void registerUser(String user_email) {
-        Log.d(TAG, "User Email: " + user_email);
+    public static void registerOrAuthUser(String user_email) {
+        // Logic used is from example in FirebaseAuth documentation
+        Log.d(TAG, "User Email for registration: " + user_email);
         auth.createUserWithEmailAndPassword(user_email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     Log.d(TAG, "User created!");
                     user = auth.getCurrentUser();
+                } else if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                    Log.d(TAG, "Email already exists! Trying standard login...");
+                    authenticateUser(user_email);
                 } else {
                     Log.w(TAG, "User creation failure!", task.getException());
                 }
@@ -75,7 +80,8 @@ public class LoginActivity {
     }
 
     public static void authenticateUser (String user_email) {
-        Log.d(TAG, "User Email: " + user_email);
+        // Logic used is from example in FirebaseAuth documentation
+        Log.d(TAG, "User Email for login: " + user_email);
         auth.signInWithEmailAndPassword(user_email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {

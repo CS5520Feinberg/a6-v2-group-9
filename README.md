@@ -7,10 +7,11 @@ Jialin Huang, Kevin Lin, Akshat Alkesh Gandhi, Vaibhav Garg, Shashank Manjunath
 - LoginActivity Class (@smanjunath)
   - getUser() -- Returns current FirebaseUser. Returns null if no user is set
     yet
-  - registerUser(String user_email) -- Registers a user with the given email.
-    Also sets the current user in LoginActivity as the registered user (i.e.
-    no need to call authenticateUser after calling registerUser). Returns void,
-    to get the user use the getUser() method.
+  - registerOrAuthUser(String user_email) -- Registers a user with the given
+    email, or authenticates if they already exist. Also sets the current user
+    in LoginActivity as the registered user (i.e. no need to call
+    authenticateUser after calling registerUser). Returns void, to get the user
+    use the getUser() method.
   - authenticateUser(String user_email) -- Authenticates user. Sets the current
     user in LoginActivity as the registered user. Returns void, to get the user
     use the getUser() method.
