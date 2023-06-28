@@ -14,6 +14,8 @@ public class LaunchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
 
+        LoginActivity.registerOrAuthUser("manjunath.sh@northeastern.edu");
+
         Button launchA6 = (Button) findViewById(R.id.launch_a6_button);
         launchA6.setOnClickListener(new View.OnClickListener() {
             @Override
