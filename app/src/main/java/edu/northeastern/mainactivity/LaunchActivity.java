@@ -18,6 +18,8 @@ public class LaunchActivity extends AppCompatActivity {
 
         Button launchA6 = (Button) findViewById(R.id.launch_a6_button);
         Button about = findViewById(R.id.about_button);
+        Button launchA8 = findViewById(R.id.launch_a8_button);
+
         launchA6.setOnClickListener(view -> {
             Intent intent = new Intent(view.getContext(), MainActivity.class);
             view.getContext().startActivity(intent);
@@ -25,6 +27,11 @@ public class LaunchActivity extends AppCompatActivity {
 
         about.setOnClickListener(v -> {
             Intent intent = new Intent(LaunchActivity.this, AboutActivity.class);
+            startActivity(intent);
+        });
+
+        launchA8.setOnClickListener(v -> {
+            Intent intent = new Intent(LaunchActivity.this, MainActivity_A8.class);
             startActivity(intent);
         });
     }
