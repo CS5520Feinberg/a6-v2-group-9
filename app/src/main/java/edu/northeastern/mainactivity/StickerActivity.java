@@ -3,10 +3,12 @@ package edu.northeastern.mainactivity;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class StickerActivity extends AppCompatActivity {
@@ -42,7 +44,10 @@ public class StickerActivity extends AppCompatActivity {
         });
     }
 
-    public void onStickerSelected(int stickerId) {
-        img.setImageResource(stickerId);
+    public void onStickerSelected(String stickerUrl) {
+        Log.d("StickerActivity", "Selected sticker URL: " + stickerUrl);
+        Glide.with(this)
+                .load(stickerUrl)
+                .into(img);
     }
 }

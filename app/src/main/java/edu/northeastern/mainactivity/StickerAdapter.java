@@ -8,13 +8,21 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
+import java.util.List;
+
 public class StickerAdapter extends RecyclerView.Adapter<StickerAdapter.StickerViewHolder> {
 
-    private final int[] stickerIds;
+    private final List<String> stickerUrls;
     private final OnStickerClickListener listener;
 
-    public StickerAdapter(int[] stickerIds, OnStickerClickListener listener) {
-        this.stickerIds = stickerIds;
+    public interface OnStickerClickListener {
+        void onStickerClick(String stickerUrl);
+    }
+
+    public StickerAdapter(List<String> stickerUrls, OnStickerClickListener listener) {
+        this.stickerUrls = stickerUrls;
         this.listener = listener;
     }
 
@@ -22,40 +30,31 @@ public class StickerAdapter extends RecyclerView.Adapter<StickerAdapter.StickerV
     @Override
     public StickerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.sticker_item, parent, false);
-        return new StickerViewHolder(view, listener);
+        return new StickerViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull StickerViewHolder holder, int position) {
-        holder.bind(stickerIds[position]);
+        Glide.with(holder.stickerView.getContext())
+                .load(stickerUrls.get(position))
+                .into(holder.stickerView);
+
+        holder.stickerView.setOnClickListener(v ->  {
+            listener.onStickerClick(stickerUrls.get(position));
+        });
     }
 
     @Override
     public int getItemCount() {
-        return stickerIds.length;
+        return stickerUrls.size();
     }
 
+    public static class StickerViewHolder extends RecyclerView.ViewHolder {
+        ImageView stickerView;
 
-    public class StickerViewHolder extends RecyclerView.ViewHolder {
-        private final ImageView imageView;
-
-        public StickerViewHolder(@NonNull View itemView, OnStickerClickListener listener) {
+        public StickerViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.imageView);
-            imageView.setOnClickListener(v -> {
-                int position = getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    listener.onStickerClick(stickerIds[position]);
-                }
-            });
+            stickerView = itemView.findViewById(R.id.stickerView);
         }
-
-        public void bind(int id) {
-            imageView.setImageResource(id);
-        }
-    }
-
-    public interface OnStickerClickListener {
-        void onStickerClick(int stickerId);
     }
 }
