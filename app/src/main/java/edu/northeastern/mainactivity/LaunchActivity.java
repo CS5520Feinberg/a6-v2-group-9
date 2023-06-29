@@ -17,12 +17,15 @@ public class LaunchActivity extends AppCompatActivity {
         LoginActivity.registerOrAuthUser("manjunath.sh@northeastern.edu");
 
         Button launchA6 = (Button) findViewById(R.id.launch_a6_button);
-        launchA6.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), MainActivity.class);
-                view.getContext().startActivity(intent);
-            }
+        Button about = findViewById(R.id.about_button);
+        launchA6.setOnClickListener(view -> {
+            Intent intent = new Intent(view.getContext(), MainActivity.class);
+            view.getContext().startActivity(intent);
+        });
+
+        about.setOnClickListener(v -> {
+            Intent intent = new Intent(LaunchActivity.this, AboutActivity.class);
+            startActivity(intent);
         });
     }
 }
