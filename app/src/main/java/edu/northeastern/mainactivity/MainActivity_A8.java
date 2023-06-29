@@ -2,6 +2,7 @@ package edu.northeastern.mainactivity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,6 +28,8 @@ public class MainActivity_A8 extends AppCompatActivity {
             if (!(usernameEditText.getText().toString().trim().matches(""))) {
                 username = usernameEditText.getText().toString();
                 LoginActivity.registerOrAuthUser(username);
+                Intent intent = new Intent(MainActivity_A8.this, StickerActivity.class);
+                startActivity(intent);
             } else {
                 Toast.makeText(this, "Enter a username", Toast.LENGTH_SHORT).show();
             }
@@ -36,6 +39,8 @@ public class MainActivity_A8 extends AppCompatActivity {
             if (!(usernameEditText.getText().toString().trim().matches(""))) {
                 username = usernameEditText.getText().toString();
                 LoginActivity.authenticateUser(username);
+                Intent intent = new Intent(MainActivity_A8.this, StickerActivity.class);
+                startActivity(intent);
             } else {
                 Toast.makeText(this, "Enter a username", Toast.LENGTH_SHORT).show();
             }
