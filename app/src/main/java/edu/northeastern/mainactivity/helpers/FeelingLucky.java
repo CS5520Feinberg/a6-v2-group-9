@@ -66,7 +66,6 @@ public class FeelingLucky implements Runnable{
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 

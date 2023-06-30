@@ -22,14 +22,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="A6 HW"
-            android:id="@+id/page_title">
+            android:id="@+id/page_title"
+            android:textSize="32dp">
         </TextView>
 
         <EditText
             android:layout_width="250dp"
             android:layout_height="50dp"
             android:id="@+id/search_bar"
-            android:text="Search">
+            android:hint="Search">
         </EditText>
 
         <View
@@ -46,8 +47,7 @@
                 android:id="@+id/search_button"
                 android:layout_width="165dp"
                 android:layout_height="wrap_content"
-                android:text="SEARCH"
-                android:onClick="goToResultPage"/>
+                android:text="SEARCH"/>
 
             <Button
                 android:id="@+id/lucky_button"
@@ -63,10 +63,18 @@
             android:layout_height="match_parent"
             android:layout_weight="1.5"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Daily article"
+            android:id="@+id/page_daily_article"
+            android:textSize="26dp">
+        </TextView>
+
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            ></androidx.recyclerview.widget.RecyclerView>
+            android:id="@+id/dailyRV" />
 
         <View
             android:layout_width="match_parent"

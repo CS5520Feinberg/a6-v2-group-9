@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +19,7 @@ import java.util.Map;
 public class APIController {
     private static String baseURLString = "https://api.wikimedia.org/feed/v1/wikipedia/en/";
     private static String searchURLString = "https://api.wikimedia.org/core/v1/wikipedia/en/search/page";
+    private static String randomURLString = "https://en.wikipedia.org/api/rest_v1/page/random/summary";
 
     public static String getRequest(URL url) {
         try {
@@ -52,7 +55,7 @@ public class APIController {
         return "";
     }
 
-    private static URL checkURLFormation(String urlString) {
+    public static URL checkURLFormation(String urlString) {
         try {
             URL target_url = new URL(urlString);
             return target_url;
@@ -82,20 +85,38 @@ public class APIController {
         return urlWithParams;
     }
 
-    public static String getDailyArticles() {
+    public static ArrayList<String> getDailyArticles(int numArticles) {
         // Returns JSON string data of daily article for the current date
-        SimpleDateFormat today = new SimpleDateFormat("yyyy/MM/dd");
-        String todayString = today.format(new Date());
-        URL queryURL = checkURLFormation(baseURLString + "featured/" + todayString);
 
+        SimpleDateFormat today = new SimpleDateFormat("yyyy/MM/dd");
+        Date curDate = new Date();
+
+        ArrayList<String> dailyArticles = new ArrayList<String>();
+        String todayString = today.format(curDate);
+        URL queryURL = checkURLFormation(baseURLString + "featured/" + todayString);
         String apiResponse = getRequest(queryURL);
-        return apiResponse;
+        dailyArticles.add(apiResponse);
+
+        for (int i=0; i<numArticles-1; i++) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(curDate);
+            cal.add(Calendar.DAY_OF_YEAR, -1);
+            curDate = cal.getTime();
+
+            String curDateString = today.format(curDate);
+            queryURL = checkURLFormation(baseURLString + "featured/" + curDateString);
+            apiResponse = getRequest(queryURL);
+
+            dailyArticles.add( apiResponse);
+        }
+
+        return dailyArticles;
     }
 
     public static String getLuckyArticle() {
-        // NOTE @shashankmanjunath: Leaving this one for @VaibhavGarg to do
-
-        return null;
+        URL queryURL = checkURLFormation(randomURLString);
+        String apiResponse = getRequest(queryURL);
+        return apiResponse;
     }
 
 

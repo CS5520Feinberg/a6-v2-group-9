@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">MainActivity</string>
+    <string name="app_name">NUMAD23Su_Group9</string>
+    <string name="Group_Name">Group 9: Jialin Huang, Shashank Manjunath, Kevin Lin, Akshat Alkesh Gandhi, Vaibhav Garg</string>
+    <string name="launch_a6">Launch Assignment 6</string>
 </resources>
