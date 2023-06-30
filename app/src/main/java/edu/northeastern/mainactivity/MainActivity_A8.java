@@ -4,9 +4,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.google.firebase.database.DatabaseError;
+
+import java.util.List;
+import java.util.Map;
+
+import edu.northeastern.mainactivity.dbmanager.FirebaseManager;
+import edu.northeastern.mainactivity.interfaces.StickerGroupsCallback;
 
 public class MainActivity_A8 extends AppCompatActivity {
 
@@ -46,4 +55,6 @@ public class MainActivity_A8 extends AppCompatActivity {
             }
         });
     }
+
+
 }

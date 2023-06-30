@@ -15,3 +15,22 @@ Jialin Huang, Kevin Lin, Akshat Alkesh Gandhi, Vaibhav Garg, Shashank Manjunath
   - authenticateUser(String user_email) -- Authenticates user. Sets the current
     user in LoginActivity as the registered user. Returns void, to get the user
     use the getUser() method.
+
+#### Packages - @AkshatGM6
+
+- apis -- all the apis
+
+    - MainApi class -- To get total messages in conversation between user A and user B.
+        - getCombinedMessages -- Returns the List
+        
+        
+- dbmanager -- Base functions related to the Firebase
+
+- interfaces -- Provides callback functions to help with async methods 
+
+- modals -- Base structure for DB elements
+
+#### Class - @AkshatGM6
+- StickerActivty.
+
+
