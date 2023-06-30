@@ -24,7 +24,8 @@ import java.util.List;
 public class StickersTabFragment extends BottomSheetDialogFragment {
 
 
-    private DatabaseReference db;
+    FirebaseDatabase database = FirebaseDatabase.getInstance("https://a6group9-default-rtdb.firebaseio.com/");
+    DatabaseReference stickersRef = database.getReference("Stickers");
 
     @Nullable
     @Override
@@ -36,8 +37,6 @@ public class StickersTabFragment extends BottomSheetDialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        db = FirebaseDatabase.getInstance("https://a6group9-default-rtdb.firebaseio.com/").getReference("stickers");
-
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
 
@@ -45,17 +44,19 @@ public class StickersTabFragment extends BottomSheetDialogFragment {
     }
 
     private void fetchStickerUrls(RecyclerView recyclerView) {
-        db.addValueEventListener(new ValueEventListener() {
+
+        stickersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<String> stickerUrls = new ArrayList<>();
-                for (DataSnapshot stickerSnapshot: dataSnapshot.getChildren()) {
-                    String url = stickerSnapshot.getValue(String.class);
-                    stickerUrls.add(url);
-                    Log.d("StickersTabFragment", "Retrieved sticker URL: " + url);
+                for (DataSnapshot categorySnapshot: dataSnapshot.getChildren()) {
+                    for (DataSnapshot urlSnapshot: categorySnapshot.child("imageUrls").getChildren()) {
+                        String stickerUrl = urlSnapshot.getValue(String.class);
+                        stickerUrls.add(stickerUrl);
+                    }
                 }
-                Log.d("StickersTabFragment", "Stickers retrieved: " + stickerUrls.size());
-                setupStickerAdapter(recyclerView, stickerUrls);
+                StickerAdapter adapter = new StickerAdapter(stickerUrls, stickerUrl -> ((StickerActivity)getActivity()).onStickerSelected(stickerUrl));
+                recyclerView.setAdapter(adapter);
             }
 
             @Override
@@ -63,10 +64,5 @@ public class StickersTabFragment extends BottomSheetDialogFragment {
 
             }
         });
-    }
-
-    private void setupStickerAdapter(RecyclerView recyclerView, List<String> stickerUrls) {
-        StickerAdapter adapter = new StickerAdapter(stickerUrls, stickerUrl -> ((StickerActivity)getActivity()).onStickerSelected(stickerUrl));
-        recyclerView.setAdapter(adapter);
     }
 }
