@@ -93,6 +93,11 @@ public class StickerActivity extends AppCompatActivity {
     }
 
     /***
+     *
+     * For users, use user-tokens (can be found in Firebase - storage ) for now, have to ask shashank to create a helper method to fetch user-tokens given the user-email
+     *
+     */
+    /***
      * To send a message from userA to userB
      */
 
@@ -131,6 +136,9 @@ public class StickerActivity extends AppCompatActivity {
         // Continue with other operations or return from the method without waiting
     }
 
+    /***
+     * Fetch conversation between userA and userB
+     */
 
     private void getEntireConversationUSerAUserB() {
         mainAPI = new MainAPI();
@@ -152,7 +160,9 @@ public class StickerActivity extends AppCompatActivity {
         // Continue with other operations or return from the method without waiting
     }
 
-
+    /***
+     * All sent messages of userA irrespective of to whom they are sent
+     */
     private void getAllSentMessageSingleUser() {
         mainAPI = new MainAPI();
         CompletableFuture<List<Message>> messagesFuture = mainAPI.getSentMessagesSingleUser("Zaq7p6ZL8aaGy4J5rKnUKZDtPwf1");
@@ -173,7 +183,9 @@ public class StickerActivity extends AppCompatActivity {
         // Continue with other operations or return from the method without waiting
     }
 
-
+    /***
+     * get count of sticker types used by a user A
+     */
     private void getCountStickers() {
         mainAPI = new MainAPI();
         CompletableFuture<Map<String, List<String>>> stickerGroupsFuture = mainAPI.fetchStickerGroups();
