@@ -14,13 +14,14 @@ import java.util.concurrent.CompletableFuture;
 
 import edu.northeastern.mainactivity.dbmanager.FirebaseManager;
 import edu.northeastern.mainactivity.interfaces.SentMessagesCallback;
+import edu.northeastern.mainactivity.interfaces.StickerGroupsCallback;
 import edu.northeastern.mainactivity.modals.Message;
 
 public class MainAPI {
     FirebaseManager firebaseManager;
     GetSentMessagesAPI getSentMessagesAPI;
     List<Message> messages;
-    public List<Message> getSortedMessages(Map<String, Message> allMessages) {
+    private List<Message> getSortedMessages(Map<String, Message> allMessages) {
         // Combine the values from both maps into a single list
         List<Message> combinedMessages = new ArrayList<>(allMessages.values());
 
@@ -63,6 +64,19 @@ public class MainAPI {
         return combined;
     }
 
+
+    public CompletableFuture<List<Message>> getSentMessagesSingleUser(String userA) {
+        CompletableFuture<Map<String, Message>> messages = CompletableFuture.supplyAsync(() -> {
+            GetSentMessagesAPI getSentMessagesAPI = new GetSentMessagesAPI();
+            return getSentMessagesAPI.getAllSentMessagesSingleUser(userA).join();
+        });
+
+        CompletableFuture<List<Message>> combined = messages.thenApply(map -> {
+            return getSortedMessages(map);
+        });
+
+        return combined;
+    }
 
 
 
@@ -109,8 +123,66 @@ public class MainAPI {
 //    }
 
 
+    public CompletableFuture<Map<String, List<String>>> fetchStickerGroups() {
+        CompletableFuture<Map<String, List<String>>> stickerGroupsFuture = new CompletableFuture<>();
+        firebaseManager = FirebaseManager.getInstance();
+        firebaseManager.getStickerGroups(new StickerGroupsCallback() {
+            @Override
+            public void onStickerGroupsLoaded(Map<String, List<String>> stickerGroups) {
+                stickerGroupsFuture.complete(stickerGroups);
+            }
+
+            @Override
+            public void onStickerGroupsLoadFailed(DatabaseError databaseError) {
+                stickerGroupsFuture.completeExceptionally(databaseError.toException());
+            }
+        });
+
+        return stickerGroupsFuture;
+    }
+
+
     public List<Message> getMessages() {
         return messages;
+    }
+
+
+    public Map<String, Integer> getStickerCount(Map<String, List<String>> stickerGroups, List<Message> sentMessages) {
+        Map<String, Integer> stickerCountMap = new HashMap<>();
+        if (stickerGroups != null && sentMessages != null) {
+
+
+            // Initialize the count for each sticker group to 0
+            for (String stickerGroup : stickerGroups.keySet()) {
+                stickerCountMap.put(stickerGroup, 0);
+            }
+
+            // Iterate over sent messages
+            for (Message message : sentMessages) {
+                String imageUrl = message.getImageUrl();
+                System.out.println("URL" + imageUrl);
+
+                // Check if the imageUrl belongs to any sticker group
+                for (String stickerGroup : stickerGroups.keySet()) {
+
+                    List<String> groupStickers = stickerGroups.get(stickerGroup);
+                    System.out.println(groupStickers.get(1));
+                    if (groupStickers.get(1).contains(imageUrl)) {
+                        // Increment the count for the sticker group
+                        int count = stickerCountMap.get(stickerGroup);
+                        stickerCountMap.put(stickerGroup, count + 1);
+                        break; // No need to check other sticker groups
+                    }
+                }
+            }
+
+//            // Print the sticker count for each group
+//            for (String stickerGroup : stickerCountMap.keySet()) {
+//                int count = stickerCountMap.get(stickerGroup);
+//                Log.d("Sticker Count", "Sticker Group: " + stickerGroup + ", Count: " + count);
+//            }
+        }
+        return stickerCountMap;
     }
 
 

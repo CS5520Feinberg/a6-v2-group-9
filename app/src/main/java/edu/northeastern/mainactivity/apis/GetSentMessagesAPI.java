@@ -34,8 +34,26 @@ import edu.northeastern.mainactivity.modals.Message;
 
             return future;
         }
-    }
 
+        public CompletableFuture<Map<String, Message>> getAllSentMessagesSingleUser(String senderId) {
+            CompletableFuture<Map<String, Message>> future = new CompletableFuture<>();
+
+            FirebaseManager firebaseManager = FirebaseManager.getInstance();
+            firebaseManager.getAllSentMessagesForUser(senderId, new SentMessagesCallback() {
+                @Override
+                public void onSentMessagesLoaded(Map<String, Message> sentMessages) {
+                    future.complete(sentMessages);
+                }
+
+                @Override
+                public void onSentMessagesLoadFailed(DatabaseError databaseError) {
+                    future.completeExceptionally(databaseError.toException());
+                }
+            });
+
+            return future;
+        }
+    }
 
 //public class GetSentMessagesAPI implements SentMessagesCallback {
 //

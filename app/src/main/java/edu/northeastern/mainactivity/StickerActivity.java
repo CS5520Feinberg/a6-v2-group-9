@@ -16,6 +16,7 @@ import com.google.firebase.database.DatabaseError;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import edu.northeastern.mainactivity.apis.GetReceivedMessageAPI;
 import edu.northeastern.mainactivity.apis.GetSentMessagesAPI;
@@ -24,17 +25,16 @@ import edu.northeastern.mainactivity.dbmanager.FirebaseManager;
 import edu.northeastern.mainactivity.interfaces.StickerGroupsCallback;
 import edu.northeastern.mainactivity.modals.Message;
 
-public class StickerActivity extends AppCompatActivity implements StickerGroupsCallback {
+public class StickerActivity extends AppCompatActivity {
 
     private Spinner usersDropdown;
     private FloatingActionButton stickersBtn;
     private ImageView img;
 
+    // This is important please don't create a new instance of firebaseManager , use the instance by ,getInstance()
     private FirebaseManager firebaseManager = FirebaseManager.getInstance();
 
-    private GetReceivedMessageAPI receivedMessageAPI;
 
-    private GetSentMessagesAPI sentMessagesAPI;
 
     private MainAPI mainAPI;
     @Override
@@ -51,34 +51,12 @@ public class StickerActivity extends AppCompatActivity implements StickerGroupsC
         // initializing the stickers from the DB
         firebaseManager.initializeDefaultStickerGroups();
 
-        // to get the stickers from the DB - There are 3 helper methods below that completes this function
-        fetchStickerGroups();
 
-        // For fetching the entire conversation history between user A and user B
-        // I am sending the  user-tokens instead of usernames so you need to access those. - I need to ask @Shashank to create a helper method for this
-        mainAPI = new MainAPI();
-        ArrayList<Message> messageList = new ArrayList<>();
-        mainAPI.getCombinedMessages("Zaq7p6ZL8aaGy4J5rKnUKZDtPwf1", "U5fcRJ4fvyZ5L6YKMPsdCT79AG92").thenApply(messages -> {
-                    // Process the messages here
-                    Log.d("Messages future ", "Messages future" + messages);
-                    messageList.addAll(messages);
-                    for(Message message : messages) {
-                        Log.d("MessageValue", message.getImageUrl());
-                        Log.d("MessageValue", message.getsender());
-                        Log.d("MessageValue", "" + message.getTimestamp());
-                        Log.d("MessageValue", message.getImageUrl());
+        /***
+         * Testing some more things
+         */
 
-                    }
-                    return messages;
-                })
-                .exceptionally(ex -> {
-                    // Handle any exceptions that occurred during message loading
-                    Log.e("Messages", "Error loading messages", ex);
-                    return null;
-                }).thenRun(() -> {
-                    // Access the messages after they have been fetched
-                    Log.d("Fetched messages", "Fetched: " + messageList);
-                });
+
 
 
         /***
@@ -90,7 +68,6 @@ public class StickerActivity extends AppCompatActivity implements StickerGroupsC
         stickersBtn = findViewById(R.id.stickersBtn);
         img = findViewById(R.id.img);
 
-//        sendMessage();
 
         // Replace by usernames/emails
         String[] temp = new String[] {
@@ -126,29 +103,103 @@ public class StickerActivity extends AppCompatActivity implements StickerGroupsC
         firebaseManager.addMessage(message);
     }
 
-    // get received messages
 
 
     /**
      * Fetching the stickers
      * */
 
-    // Async function handled through callbacks
 
-    // to get the stickers
-    public void fetchStickerGroups() {
-        firebaseManager.getStickerGroups(this);
+
+    // to get stickers
+    private void getStickerGroups() {
+        mainAPI = new MainAPI();
+        CompletableFuture<Map<String, List<String>>> stickerGroupsFuture = mainAPI.fetchStickerGroups();
+
+        stickerGroupsFuture.thenAccept(stickerGroups -> {
+            // Access the fetched sticker groups here
+            Log.d("HAHAHA WORKEDDDDD", "PRINTING STICKERS" + stickerGroups);
+
+            // Call any other methods
+            // eg. useStickers(stickerGroups)
+        }).exceptionally(ex -> {
+            // Handle error if sticker groups loading fails
+            Log.e("Sticker Groups", "Error loading sticker groups", ex);
+            return null;
+        });
+
+        // Continue with other operations or return from the method without waiting
     }
 
-    @Override
-    public void onStickerGroupsLoaded(Map<String, List<String>> stickerGroups) {
-        Log.d("Sticker Groups", "Stickers got " + stickerGroups);
+
+    private void getEntireConversationUSerAUserB() {
+        mainAPI = new MainAPI();
+        CompletableFuture<List<Message>> messagesFuture = mainAPI.getCombinedMessages("Zaq7p6ZL8aaGy4J5rKnUKZDtPwf1", "U5fcRJ4fvyZ5L6YKMPsdCT79AG92");
+
+        messagesFuture.thenAccept(messages -> {
+            // Access the fetched messages here
+            Log.d("HAHAHA WORKEDDDDD", "PRINTING Messages Combined" + messages);
+//            handleMessages(messages);
+
+            // Call any other methods or perform actions based on messages
+            // ...
+        }).exceptionally(ex -> {
+            // Handle error if message loading fails
+            Log.e("Messages", "Error loading messages", ex);
+            return null;
+        });
+
+        // Continue with other operations or return from the method without waiting
     }
 
-    @Override
-    public void onStickerGroupsLoadFailed(DatabaseError databaseError) {
-        Log.d("Sticker Groups", "Error " + databaseError);
+
+    private void getAllSentMessageSingleUser() {
+        mainAPI = new MainAPI();
+        CompletableFuture<List<Message>> messagesFuture = mainAPI.getSentMessagesSingleUser("Zaq7p6ZL8aaGy4J5rKnUKZDtPwf1");
+
+        messagesFuture.thenAccept(messages -> {
+            // Access the fetched messages here
+            Log.d("SINGE MESSAGES", "HAHAHAH" + messages);
+//            handleMessages(messages);
+
+            // Call any other methods or perform actions based on messages
+            // ...
+        }).exceptionally(ex -> {
+            // Handle error if message loading fails
+            Log.e("Messages", "Error loading messages", ex);
+            return null;
+        });
+
+        // Continue with other operations or return from the method without waiting
     }
 
+
+    private void getCountStickers() {
+        mainAPI = new MainAPI();
+        CompletableFuture<Map<String, List<String>>> stickerGroupsFuture = mainAPI.fetchStickerGroups();
+        CompletableFuture<List<Message>> messagesFuture = mainAPI.getSentMessagesSingleUser("Zaq7p6ZL8aaGy4J5rKnUKZDtPwf1");
+
+        CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(stickerGroupsFuture, messagesFuture);
+
+        combinedFuture.thenRun(() -> {
+            Map<String, List<String>> stickerGroups = stickerGroupsFuture.join();
+            List<Message> sentMessages = messagesFuture.join();
+
+            // Call the getStickerCount method with the fetched sticker groups and sent messages
+            Map<String, Integer> count = mainAPI.getStickerCount(stickerGroups, sentMessages);
+
+            // Print the sticker count for each group
+            for (String stickerGroup : count.keySet()) {
+                int c = count.get(stickerGroup);
+                Log.d("Sticker Count", "Sticker Group: " + stickerGroup + ", Count: " + c);
+            }
+        }).exceptionally(ex -> {
+            // Handle error if fetching sticker groups or messages fails
+            Log.e("Fetch Error", "Error fetching sticker groups or messages", ex);
+            return null;
+        });
+
+        // Continue with other operations or return from the method without waiting
+    }
 
 }
