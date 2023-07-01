@@ -24,6 +24,8 @@ public class MainActivity_A8 extends AppCompatActivity {
     private Button signInBtn;
     private EditText usernameEditText;
 
+    private FirebaseManager firebaseManager = FirebaseManager.getInstance();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,24 +38,59 @@ public class MainActivity_A8 extends AppCompatActivity {
         signUpBtn.setOnClickListener(v -> {
             if (!(usernameEditText.getText().toString().trim().matches(""))) {
                 username = usernameEditText.getText().toString();
-                LoginActivity.registerOrAuthUser(username);
-                Intent intent = new Intent(MainActivity_A8.this, StickerActivity.class);
-                startActivity(intent);
+                FirebaseManager.registerOrAuthUser(username)
+                        .thenAccept(user -> {
+                            Intent intent = new Intent(MainActivity_A8.this, StickerActivity.class);
+                            startActivity(intent);
+                        })
+                        .exceptionally(ex -> {
+                            Toast.makeText(MainActivity_A8.this, "Authentication failed", Toast.LENGTH_SHORT).show();
+                            return null;
+                        });
             } else {
                 Toast.makeText(this, "Enter a username", Toast.LENGTH_SHORT).show();
             }
         });
 
+//        signUpBtn.setOnClickListener(v -> {
+//            if (!(usernameEditText.getText().toString().trim().matches(""))) {
+//                username = usernameEditText.getText().toString();
+//                LoginActivity.registerOrAuthUser(username);
+//                Intent intent = new Intent(MainActivity_A8.this, StickerActivity.class);
+//                startActivity(intent);
+//            } else {
+//                Toast.makeText(this, "Enter a username", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+
         signInBtn.setOnClickListener(v -> {
             if (!(usernameEditText.getText().toString().trim().matches(""))) {
                 username = usernameEditText.getText().toString();
-                LoginActivity.authenticateUser(username);
-                Intent intent = new Intent(MainActivity_A8.this, StickerActivity.class);
-                startActivity(intent);
+                firebaseManager.authenticateUser(username)
+                        .thenAccept(user -> {
+                            Intent intent = new Intent(MainActivity_A8.this, StickerActivity.class);
+                            startActivity(intent);
+                        })
+                        .exceptionally(ex -> {
+                            Toast.makeText(MainActivity_A8.this, "Authentication failed", Toast.LENGTH_SHORT).show();
+                            return null;
+                        });
             } else {
                 Toast.makeText(this, "Enter a username", Toast.LENGTH_SHORT).show();
             }
         });
+
+//        signInBtn.setOnClickListener(v -> {
+//            if (!(usernameEditText.getText().toString().trim().matches(""))) {
+//                username = usernameEditText.getText().toString();
+//                LoginActivity.authenticateUser(username);
+//
+//                Intent intent = new Intent(MainActivity_A8.this, StickerActivity.class);
+//                startActivity(intent);
+//            } else {
+//                Toast.makeText(this, "Enter a username", Toast.LENGTH_SHORT).show();
+//            }
+//        });
     }
 
 
