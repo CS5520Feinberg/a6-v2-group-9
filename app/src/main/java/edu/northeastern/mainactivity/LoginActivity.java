@@ -66,12 +66,14 @@ public class LoginActivity {
     public static void registerOrAuthUser(String user_email) {
         // Logic used is from example in FirebaseAuth documentation
         Log.d(TAG, "User Email for registration: " + user_email);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference userEmailsRef = database.getReference("UserEmails");
         auth.createUserWithEmailAndPassword(user_email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     user = auth.getCurrentUser();
-
+                    userEmailsRef.push().setValue(user_email);
                     firebaseManager.setLoggedInUser(user);
                 } else if (task.getException() instanceof FirebaseAuthUserCollisionException) {
                     Log.d(TAG, "Email already exists! Trying standard login...");
