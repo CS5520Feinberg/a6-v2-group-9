@@ -2,9 +2,13 @@ package edu.northeastern.mainactivity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -37,10 +41,14 @@ public class StickerActivity extends AppCompatActivity {
 
     private Spinner usersDropdown;
     private FloatingActionButton stickersBtn;
-    private ImageView img;
 
     // This is important please don't create a new instance of firebaseManager , use the instance by ,getInstance()
     private FirebaseManager firebaseManager = FirebaseManager.getInstance();
+    private FirebaseDatabase database = FirebaseDatabase.getInstance("https://a6group9-default-rtdb.firebaseio.com/");
+    private DatabaseReference userInfoRef = database.getReference("UserInfo");
+    private List<Message> conversation;
+    private ChatAdapter chatAdapter;
+    private RecyclerView chatRecyclerView;
 
     private MainAPI mainAPI;
     @Override
@@ -68,7 +76,7 @@ public class StickerActivity extends AppCompatActivity {
 
         getStickerGroups();
 
-        getEntireConversationUSerAUserB();
+        //getEntireConversationUSerAUserB();
 
 
 
@@ -77,25 +85,24 @@ public class StickerActivity extends AppCompatActivity {
          */
 
 
+        chatRecyclerView = findViewById(R.id.stickerRecyclerView);
+        chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         usersDropdown = findViewById(R.id.usersDropdown);
         stickersBtn = findViewById(R.id.stickersBtn);
-        img = findViewById(R.id.img);
 
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance("https://a6group9-default-rtdb.firebaseio.com/");
-        DatabaseReference userEmailsRef = database.getReference("UserEmails");
         List<String> userEmails = new ArrayList<>();
+        userEmails.add("Select a user");
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, userEmails);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         usersDropdown.setAdapter(adapter);
 
-        userEmailsRef.addValueEventListener(new ValueEventListener() {
+        userInfoRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                userEmails.clear();
-                for (DataSnapshot emailSnapshot: dataSnapshot.getChildren()) {
-                    String email = emailSnapshot.getValue(String.class);
+                userEmails.subList(1, userEmails.size()).clear();
+                for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
+                    String email = userSnapshot.child("email").getValue(String.class);
                     userEmails.add(email);
                 }
                 adapter.notifyDataSetChanged();
@@ -107,18 +114,103 @@ public class StickerActivity extends AppCompatActivity {
             }
         });
 
+        usersDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String targetEmail = usersDropdown.getSelectedItem().toString();
+                getUidFromEmail(targetEmail).thenAccept(uid -> {
+                    if(uid != null && firebaseUser.getUid() != null) {  // check that the uid's are not null
+                        getEntireConversationUserAUserB(firebaseUser.getUid(), uid)
+                                .thenAccept(messages -> {
+                                    runOnUiThread(() -> {
+                                        conversation = messages;
+                                        chatAdapter = new ChatAdapter(conversation, firebaseUser.getUid());
+                                        chatRecyclerView.setAdapter(chatAdapter);
+                                    });
+                                }).exceptionally(ex -> {
+                                    Log.e("Messages", "Error loading messages", ex);
+                                    return null;
+                                });
+                    } else {
+                        Log.e("UID", "Uid is null");
+                    }
+                }).exceptionally(e -> {
+                    Log.e("UID", "Error getting uid", e);
+                    return null;
+                });
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+
         stickersBtn.setOnClickListener(v -> {
             StickersTabFragment stickersTabFragment = new StickersTabFragment();
             stickersTabFragment.show(getSupportFragmentManager(), stickersTabFragment.getTag());
         });
     }
 
+    private CompletableFuture<String> getUidFromEmail(String targetEmail) {
+        CompletableFuture<String> futureUid = new CompletableFuture<>();
+        FirebaseDatabase database = FirebaseDatabase.getInstance("https://a6group9-default-rtdb.firebaseio.com/");
+        DatabaseReference userInfoRef = database.getReference("UserInfo");
+        userInfoRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String uid = null;
+                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                    String email = userSnapshot.child("email").getValue(String.class);
+                    if (targetEmail.equals(email)) {
+                        uid = userSnapshot.child("userID").getValue(String.class);
+                        break;
+                    }
+                }
+                futureUid.complete(uid);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                futureUid.completeExceptionally(error.toException());
+            }
+        });
+
+        return futureUid;
+    }
+
     public void onStickerSelected(String stickerUrl) {
         Log.d("StickerActivity", "Selected sticker URL: " + stickerUrl);
-        Glide.with(this)
-                .load(stickerUrl)
-                .into(img);
+        FirebaseDatabase database = FirebaseDatabase.getInstance("https://a6group9-default-rtdb.firebaseio.com/");
+        DatabaseReference userInfoRef = database.getReference("UserInfo");
+        FirebaseUser firebaseUser = firebaseManager.getLoggedInUser();
+        String senderID = firebaseUser.getUid();
+        if (!usersDropdown.getSelectedItem().toString().equals("Select a user")) {
+            String targetEmail = usersDropdown.getSelectedItem().toString();
+            userInfoRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String receiverID;
+                    for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                        String email = userSnapshot.child("email").getValue(String.class);
+                        if (targetEmail.equals(email)) {
+                            receiverID = userSnapshot.child("userID").getValue(String.class);
+                            Log.d("userID", receiverID);
+                            sendMessage(senderID, receiverID, stickerUrl);
+                            break;
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
     }
+
 
     /***
      *
@@ -167,9 +259,9 @@ public class StickerActivity extends AppCompatActivity {
      * Fetch conversation between userA and userB
      */
 
-    private void getEntireConversationUSerAUserB() {
+    private CompletableFuture<List<Message>> getEntireConversationUserAUserB(String userA, String userB) {
         mainAPI = new MainAPI();
-        CompletableFuture<List<Message>> messagesFuture = mainAPI.getCombinedMessages("Zaq7p6ZL8aaGy4J5rKnUKZDtPwf1", "U5fcRJ4fvyZ5L6YKMPsdCT79AG92");
+        CompletableFuture<List<Message>> messagesFuture = mainAPI.getCombinedMessages(userA, userB);
 
         messagesFuture.thenAccept(messages -> {
             // Access the fetched messages here
@@ -185,6 +277,7 @@ public class StickerActivity extends AppCompatActivity {
         });
 
         // Continue with other operations or return from the method without waiting
+        return messagesFuture;
     }
 
     /***
