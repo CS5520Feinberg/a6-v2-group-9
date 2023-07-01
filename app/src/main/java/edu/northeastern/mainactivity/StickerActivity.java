@@ -21,7 +21,9 @@ import java.util.concurrent.CompletableFuture;
 import edu.northeastern.mainactivity.apis.GetReceivedMessageAPI;
 import edu.northeastern.mainactivity.apis.GetSentMessagesAPI;
 import edu.northeastern.mainactivity.apis.MainAPI;
+import edu.northeastern.mainactivity.apis.SendNotification;
 import edu.northeastern.mainactivity.dbmanager.FirebaseManager;
+import edu.northeastern.mainactivity.entity.Notification;
 import edu.northeastern.mainactivity.interfaces.StickerGroupsCallback;
 import edu.northeastern.mainactivity.modals.Message;
 
@@ -105,6 +107,8 @@ public class StickerActivity extends AppCompatActivity {
     public void sendMessage(String sender, String receiver, String stickerTokenURL) {
 //        Message message = new Message( "JcvHYO1eEkftiVELHEER07BkWO22", "Zaq7p6ZL8aaGy4J5rKnUKZDtPwf1", System.currentTimeMillis(), "https://firebasestorage.googleapis.com/v0/b/a6group9.appspot.com/o/crying1.png?alt=media&token=12cb5542-3ccb-4ed7-a197-7aefc9f4c8dd" );
         Message message = new Message(sender, receiver, System.currentTimeMillis(), stickerTokenURL);
+        SendNotification sendNotification = new SendNotification(new Notification(sender,receiver,""+System.currentTimeMillis(),stickerTokenURL));
+        sendNotification.sendNotificationToFireBase();
         firebaseManager.addMessage(message);
     }
 

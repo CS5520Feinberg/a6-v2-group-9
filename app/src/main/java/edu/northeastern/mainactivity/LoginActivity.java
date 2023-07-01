@@ -18,7 +18,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.messaging.FirebaseMessaging;
 
+import edu.northeastern.mainactivity.apis.SendNotification;
 import edu.northeastern.mainactivity.dbmanager.FirebaseManager;
 
 public class LoginActivity {
@@ -73,6 +75,7 @@ public class LoginActivity {
                     user = auth.getCurrentUser();
 
                     firebaseManager.setLoggedInUser(user);
+                    saveDeviceToken(user.getUid());
                 } else if (task.getException() instanceof FirebaseAuthUserCollisionException) {
                     Log.d(TAG, "Email already exists! Trying standard login...");
                     authenticateUser(user_email);
@@ -94,10 +97,35 @@ public class LoginActivity {
                     user = auth.getCurrentUser();
                     Log.d(TAG, "User created!" + user.getEmail());
                     firebaseManager.setLoggedInUser(user);
+                    saveDeviceToken(user.getUid());
+
                 } else {
                     Log.w(TAG, "Login failed!", task.getException());
                 }
             }
         });
+    }
+    private static void saveDeviceToken(String userId) {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                        return;
+                    }
+                    String deviceToken = task.getResult();
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference userRef = database.getReference("users").child(userId);
+                    userRef.child("deviceToken").setValue(deviceToken)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Log.d(TAG, "Device token saved for user: " + userId);
+                                    } else {
+                                        Log.w(TAG, "Failed to save device token for user: " + userId);
+                                    }
+                                }
+                            });
+                });
     }
 }
