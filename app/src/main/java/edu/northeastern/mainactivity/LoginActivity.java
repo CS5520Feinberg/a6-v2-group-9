@@ -19,9 +19,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import com.google.firebase.auth.FirebaseAuth;
 
+import edu.northeastern.mainactivity.dbmanager.FirebaseManager;
+
 public class LoginActivity {
 
-    private static FirebaseAuth auth = FirebaseAuth.getInstance();
+    private static FirebaseManager firebaseManager = FirebaseManager.getInstance();
+    private static FirebaseAuth auth = firebaseManager.getAuthInstance();
     private static FirebaseUser user = null;
 
     // We use the same password for all users to avoid having to worry about passwords
@@ -67,8 +70,9 @@ public class LoginActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    Log.d(TAG, "User created!");
                     user = auth.getCurrentUser();
+
+                    firebaseManager.setLoggedInUser(user);
                 } else if (task.getException() instanceof FirebaseAuthUserCollisionException) {
                     Log.d(TAG, "Email already exists! Trying standard login...");
                     authenticateUser(user_email);
@@ -88,6 +92,8 @@ public class LoginActivity {
                 if (task.isSuccessful()) {
                     Log.d(TAG, "Login Successful!");
                     user = auth.getCurrentUser();
+                    Log.d(TAG, "User created!" + user.getEmail());
+                    firebaseManager.setLoggedInUser(user);
                 } else {
                     Log.w(TAG, "Login failed!", task.getException());
                 }
