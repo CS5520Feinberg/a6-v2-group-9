@@ -8,12 +8,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
 
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 import edu.northeastern.mainactivity.entity.Notification;
+import edu.northeastern.mainactivity.modals.Message;
 
 public class SendNotification {
     static Notification notification;
@@ -21,7 +24,7 @@ public class SendNotification {
         this.notification = notification;
     }
     public void sendNotificationToFireBase() {
-        DatabaseReference dbUserRef = FirebaseDatabase.getInstance().getReference().child("users").child(notification.getReceiver());
+        DatabaseReference dbUserRef = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(notification.getReceiver().replace('.','t'));
 
         dbUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -74,5 +77,6 @@ public class SendNotification {
 
             return null;
         }
+
     }
 }
