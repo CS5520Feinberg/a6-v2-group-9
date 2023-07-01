@@ -21,7 +21,7 @@ public class SendNotification {
         this.notification = notification;
     }
     public void sendNotificationToFireBase() {
-        DatabaseReference dbUserRef = FirebaseDatabase.getInstance().getReference().child("users").child(notification.getReceiver());
+        DatabaseReference dbUserRef = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(notification.getReceiver().replace('.','t'));
 
         dbUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

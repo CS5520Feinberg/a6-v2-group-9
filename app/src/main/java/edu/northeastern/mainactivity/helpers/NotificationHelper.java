@@ -22,6 +22,7 @@ public class NotificationHelper extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         String title = remoteMessage.getNotification().getTitle();
         String message = remoteMessage.getNotification().getBody();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel();
         }
@@ -42,8 +43,8 @@ public class NotificationHelper extends FirebaseMessagingService {
     }
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Channel Name";
-            String description = "Channel Description";
+            CharSequence name = "Group 9 Channel";
+            String description = "the best channel";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel("channel_id", name, importance);
             channel.setDescription(description);
@@ -54,5 +55,6 @@ public class NotificationHelper extends FirebaseMessagingService {
             }
         }
     }
+
 
 }
