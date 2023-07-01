@@ -11,6 +11,7 @@ import android.widget.Spinner;
 //import com.bumptech.glide.Glide;
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
 
 import java.util.ArrayList;
@@ -51,11 +52,18 @@ public class StickerActivity extends AppCompatActivity {
         // initializing the stickers from the DB
         firebaseManager.initializeDefaultStickerGroups();
 
+        FirebaseUser firebaseUser = firebaseManager.getLoggedInUser();
+
+        Log.d("USER INFO ", "" + firebaseUser.getUid());     // or .getEmail()
+
 
         /***
          * Testing some more things
          */
 
+        getStickerGroups();
+
+        getEntireConversationUSerAUserB();
 
 
 
@@ -213,5 +221,7 @@ public class StickerActivity extends AppCompatActivity {
 
         // Continue with other operations or return from the method without waiting
     }
+
+
 
 }

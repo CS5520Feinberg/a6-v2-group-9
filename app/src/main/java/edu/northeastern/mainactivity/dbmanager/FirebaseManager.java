@@ -2,7 +2,13 @@ package edu.northeastern.mainactivity.dbmanager;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -16,8 +22,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
-import edu.northeastern.mainactivity.LoginActivity;
+//import edu.northeastern.mainactivity.LoginActivity;
 import edu.northeastern.mainactivity.interfaces.ReceivedMessagesCallback;
 import edu.northeastern.mainactivity.interfaces.SentMessagesCallback;
 import edu.northeastern.mainactivity.interfaces.StickerGroupsCallback;
@@ -28,10 +35,14 @@ public class FirebaseManager {
 
     private static FirebaseManager instance;
     private static FirebaseAuth auth = FirebaseAuth.getInstance();
+
     private DatabaseReference stickersRef;
     private DatabaseReference messagesRef;
 
     private static FirebaseUser LoggedInUser;
+
+    // We use the same password for all users to avoid having to worry about passwords
+    private static String pass = "test_pass";
 
     // tokens
     private String cry1 = "https://firebasestorage.googleapis.com/v0/b/a6group9.appspot.com/o/crying1.png?alt=media&token=12cb5542-3ccb-4ed7-a197-7aefc9f4c8dd";
@@ -65,11 +76,66 @@ public class FirebaseManager {
     // set user
     public void setLoggedInUser(FirebaseUser firebaseUser) {
         LoggedInUser = firebaseUser;
+        Log.d("LOGGED IN ", "FB " + LoggedInUser);
     }
 
     // get user
     public FirebaseUser getLoggedInUser() {
+        Log.d("LOGGED IN ", "FB " + LoggedInUser);
         return LoggedInUser;
+    }
+
+    //Auth and register
+
+    public static CompletableFuture<FirebaseUser> registerOrAuthUser(String user_email) {
+        CompletableFuture<FirebaseUser> future = new CompletableFuture<>();
+        // Logic used is from example in FirebaseAuth documentation
+        Log.d("REGISTERED USER", "User Email for registration: " + user_email);
+        auth.createUserWithEmailAndPassword(user_email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    FirebaseUser loggedInUser = auth.getCurrentUser(); // Store the registered/authenticated user in the static variable
+                    LoggedInUser = loggedInUser;
+                    future.complete(loggedInUser); // Complete the future with the registered/authenticated user
+                } else if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                    Log.d("ERROR", "Email already exists! Trying standard login...");
+                    authenticateUser(user_email)
+                            .thenAccept(user -> future.complete(user)) // Complete the future with the logged-in user
+                            .exceptionally(ex -> {
+                                future.completeExceptionally(ex); // Complete the future exceptionally with the authentication exception
+                                return null;
+                            });
+                } else {
+                    Log.w("ERROR", "User creation failure!", task.getException());
+                    future.completeExceptionally(task.getException()); // Complete the future exceptionally with the task exception
+                }
+            }
+        });
+        return future;
+    }
+
+
+    public static CompletableFuture<FirebaseUser> authenticateUser(String user_email) {
+        CompletableFuture<FirebaseUser> future = new CompletableFuture<>();
+        // Logic used is from example in FirebaseAuth documentation
+        Log.d("LOGGEDIN", "User Email for login: " + user_email);
+        auth.signInWithEmailAndPassword(user_email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    Log.d("SUCCESS", "Login Successful!");
+                    FirebaseUser loggedInUser = auth.getCurrentUser(); // Store the authenticated user in the static variable
+                    LoggedInUser = loggedInUser;
+                    Log.d("LOGGEDIN", "User created! User: " + loggedInUser + " email: " + loggedInUser.getEmail() + " uid: " + loggedInUser.getUid());
+                    future.complete(loggedInUser); // Complete the future with the logged-in user
+                } else {
+                    Log.w("LOGIN FAILED", "Login failed!", task.getException());
+                    future.completeExceptionally(task.getException()); // Complete the future exceptionally with the task exception
+                }
+            }
+        });
+        return future;
     }
 
     public void initializeDefaultStickerGroups() {
