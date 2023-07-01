@@ -78,7 +78,7 @@ public class FeelingLucky implements Runnable{
 
         if (firstResultUrl != null) {
             System.out.println(firstResultUrl);
-           // openWebpage(firstResultUrl);
+
         } else {
             System.out.println("No search results found.");
         }

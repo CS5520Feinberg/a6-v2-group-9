@@ -287,12 +287,7 @@ public class FirebaseManager {
     public void addMessage(Message message) {
         DatabaseReference messageRef = messagesRef.child("sent").child(message.getsender()).push();
         messageRef.setValue(message);
-
         DatabaseReference receivedRef = messagesRef.child("received").child(message.getreceiver()).push();
         receivedRef.setValue(message);
     }
-
-    // Other methods for removing, updating, and managing messages
-
-    // ...
 }
