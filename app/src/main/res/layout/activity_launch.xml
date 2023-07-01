@@ -6,27 +6,55 @@
     android:layout_height="match_parent"
     tools:context=".LaunchActivity">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="299dp"
-        android:layout_height="39dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="25dp"
-        android:layout_marginEnd="10dp"
-        android:text="@string/Group_Name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center" >
 
-    <Button
-        android:id="@+id/launch_a6_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="25dp"
-        android:layout_marginEnd="10dp"
-        android:text="@string/launch_a6"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/about_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="About" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/launch_a6_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginEnd="10dp"
+            android:text="@string/launch_a6"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/launch_a8_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Launch Assignment 8" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

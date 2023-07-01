@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         searchButton = findViewById(R.id.search_button);
         luckyButton = findViewById(R.id.lucky_button);
         searchBar = findViewById(R.id.search_bar);
@@ -87,6 +86,5 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
-
 }
 
