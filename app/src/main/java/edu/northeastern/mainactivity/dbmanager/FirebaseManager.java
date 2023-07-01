@@ -91,12 +91,16 @@ public class FirebaseManager {
         CompletableFuture<FirebaseUser> future = new CompletableFuture<>();
         // Logic used is from example in FirebaseAuth documentation
         Log.d("REGISTERED USER", "User Email for registration: " + user_email);
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference userEmailsRef = database.getReference("UserEmails");
         auth.createUserWithEmailAndPassword(user_email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     FirebaseUser loggedInUser = auth.getCurrentUser(); // Store the registered/authenticated user in the static variable
                     LoggedInUser = loggedInUser;
+                    userEmailsRef.push().setValue(user_email);
                     future.complete(loggedInUser); // Complete the future with the registered/authenticated user
                 } else if (task.getException() instanceof FirebaseAuthUserCollisionException) {
                     Log.d("ERROR", "Email already exists! Trying standard login...");
