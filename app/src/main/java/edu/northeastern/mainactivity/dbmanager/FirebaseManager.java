@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
@@ -16,6 +17,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,8 +25,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 //import edu.northeastern.mainactivity.LoginActivity;
+import edu.northeastern.mainactivity.interfaces.CompletionHandler;
 import edu.northeastern.mainactivity.interfaces.ReceivedMessagesCallback;
 import edu.northeastern.mainactivity.interfaces.SentMessagesCallback;
 import edu.northeastern.mainactivity.interfaces.StickerGroupsCallback;
@@ -101,9 +105,21 @@ public class FirebaseManager {
                 if (task.isSuccessful()) {
                     FirebaseUser loggedInUser = auth.getCurrentUser(); // Store the registered/authenticated user in the static variable
                     LoggedInUser = loggedInUser;
-                    UserInfo userInfo = new UserInfo(user_email, LoggedInUser.getUid());
-                    userInfoRef.push().setValue(userInfo);
-                    future.complete(loggedInUser); // Complete the future with the registered/authenticated user
+                    saveDeviceToken(new CompletionHandler<String>() {
+                        @Override
+                        public void onSuccess(String deviceToken) {
+                            UserInfo userInfo = new UserInfo(user_email, LoggedInUser.getUid(),deviceToken);
+
+                            userInfoRef.child(user_email.replace('.','t')).setValue(userInfo);
+                            future.complete(loggedInUser);
+                        }
+
+                        @Override
+                        public void onError(Exception exception) {
+                           System.out.println("GotError");
+                        }
+                    });
+
                 } else if (task.getException() instanceof FirebaseAuthUserCollisionException) {
                     Log.d("ERROR", "Email already exists! Trying standard login...");
                     authenticateUser(user_email)
@@ -290,4 +306,17 @@ public class FirebaseManager {
         DatabaseReference receivedRef = messagesRef.child("received").child(message.getreceiver()).push();
         receivedRef.setValue(message);
     }
+    private static void saveDeviceToken(CompletionHandler<String> completionHandler) {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        String deviceToken = task.getResult();
+                        completionHandler.onSuccess(deviceToken);
+                    } else {
+                        completionHandler.onError(task.getException());
+                    }
+                });
+    }
+
+
 }

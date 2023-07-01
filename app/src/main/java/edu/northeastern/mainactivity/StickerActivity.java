@@ -119,6 +119,27 @@ public class StickerActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String targetEmail = usersDropdown.getSelectedItem().toString();
                 refreshConversation(targetEmail);
+//                 Log.d("TARGET_EMAIL",targetEmail);
+//                 getUidFromEmail(targetEmail).thenAccept(uid -> {
+//                     if(uid != null && firebaseUser.getUid() != null) {  // check that the uid's are not null
+//                         getEntireConversationUserAUserB(firebaseUser.getUid(), uid)
+//                                 .thenAccept(messages -> {
+//                                     runOnUiThread(() -> {
+//                                         conversation = messages;
+//                                         chatAdapter = new ChatAdapter(conversation, firebaseUser.getUid());
+//                                         chatRecyclerView.setAdapter(chatAdapter);
+//                                     });
+//                                 }).exceptionally(ex -> {
+//                                     Log.e("Messages", "Error loading messages", ex);
+//                                     return null;
+//                                 });
+//                     } else {
+//                         Log.e("UID", "Uid is null");
+//                     }
+//                 }).exceptionally(e -> {
+//                     Log.e("UID", "Error getting uid", e);
+//                     return null;
+//                 });
             }
 
             @Override
@@ -210,9 +231,9 @@ public class StickerActivity extends AppCompatActivity {
                         String email = userSnapshot.child("email").getValue(String.class);
                         if (targetEmail.equals(email)) {
                             receiverID = userSnapshot.child("userID").getValue(String.class);
-                            Log.d("userID", receiverID);
-                            sendMessage(senderID, receiverID, stickerUrl);
+                            sendMessage(senderID, receiverID, stickerUrl,email,senderID);
                             refreshConversation(targetEmail);
+                          
                             break;
                         }
 
@@ -267,10 +288,13 @@ public class StickerActivity extends AppCompatActivity {
      */
 
     // Send message
-    public void sendMessage(String sender, String receiver, String stickerTokenURL) {
+    public void sendMessage(String senderUid, String receiverUid, String stickerTokenURL, String receiverEmail, String senderEmail)  {
 //        Message message = new Message( "JcvHYO1eEkftiVELHEER07BkWO22", "Zaq7p6ZL8aaGy4J5rKnUKZDtPwf1", System.currentTimeMillis(), "https://firebasestorage.googleapis.com/v0/b/a6group9.appspot.com/o/crying1.png?alt=media&token=12cb5542-3ccb-4ed7-a197-7aefc9f4c8dd" );
-        Message message = new Message(sender, receiver, System.currentTimeMillis(), stickerTokenURL);
-        SendNotification sendNotification = new SendNotification(new Notification(sender,receiver,""+System.currentTimeMillis(),stickerTokenURL));
+
+        Message message = new Message(senderUid, receiverUid, System.currentTimeMillis(), stickerTokenURL);
+        Log.d("SENDING:", String.valueOf(message));
+        SendNotification sendNotification = new SendNotification(new Notification(senderEmail,receiverEmail,""+System.currentTimeMillis(),stickerTokenURL));
+        Log.d("SENDING:", String.valueOf(sendNotification));
         sendNotification.sendNotificationToFireBase();
         firebaseManager.addMessage(message);
     }
