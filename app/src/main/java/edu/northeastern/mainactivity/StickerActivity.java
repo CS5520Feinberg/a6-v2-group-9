@@ -83,19 +83,19 @@ public class StickerActivity extends AppCompatActivity {
 
 
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://a6group9-default-rtdb.firebaseio.com/");
-        DatabaseReference userEmailsRef = database.getReference("UserEmails");
+        DatabaseReference userInfoRef = database.getReference("UserInfo");
         List<String> userEmails = new ArrayList<>();
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, userEmails);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         usersDropdown.setAdapter(adapter);
 
-        userEmailsRef.addValueEventListener(new ValueEventListener() {
+        userInfoRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 userEmails.clear();
-                for (DataSnapshot emailSnapshot: dataSnapshot.getChildren()) {
-                    String email = emailSnapshot.getValue(String.class);
+                for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
+                    String email = userSnapshot.child("email").getValue(String.class);
                     userEmails.add(email);
                 }
                 adapter.notifyDataSetChanged();
