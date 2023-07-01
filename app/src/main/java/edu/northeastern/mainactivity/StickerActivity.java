@@ -117,6 +117,7 @@ public class StickerActivity extends AppCompatActivity {
         usersDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String targetEmail = usersDropdown.getSelectedItem().toString();
+                Log.d("TARGET_EMAIL",targetEmail);
                 getUidFromEmail(targetEmail).thenAccept(uid -> {
                     if(uid != null && firebaseUser.getUid() != null) {  // check that the uid's are not null
                         getEntireConversationUserAUserB(firebaseUser.getUid(), uid)
@@ -197,7 +198,9 @@ public class StickerActivity extends AppCompatActivity {
                         if (targetEmail.equals(email)) {
                             receiverID = userSnapshot.child("userID").getValue(String.class);
                             Log.d("userID", receiverID);
-                            sendMessage(senderID, receiverID, stickerUrl);
+                            Log.d("senderId",senderID);
+                            Log.d("email",email);
+                            sendMessage(senderID, receiverID, stickerUrl,email,senderID);
                             break;
                         }
                     }
@@ -224,8 +227,11 @@ public class StickerActivity extends AppCompatActivity {
     // Send message
     public void sendMessage(String senderUid, String receiverUid, String stickerTokenURL, String receiverEmail, String senderEmail)  {
 //        Message message = new Message( "JcvHYO1eEkftiVELHEER07BkWO22", "Zaq7p6ZL8aaGy4J5rKnUKZDtPwf1", System.currentTimeMillis(), "https://firebasestorage.googleapis.com/v0/b/a6group9.appspot.com/o/crying1.png?alt=media&token=12cb5542-3ccb-4ed7-a197-7aefc9f4c8dd" );
+
         Message message = new Message(senderUid, receiverUid, System.currentTimeMillis(), stickerTokenURL);
+        Log.d("SENDING:", String.valueOf(message));
         SendNotification sendNotification = new SendNotification(new Notification(senderEmail,receiverEmail,""+System.currentTimeMillis(),stickerTokenURL));
+        Log.d("SENDING:", String.valueOf(sendNotification));
         sendNotification.sendNotificationToFireBase();
         firebaseManager.addMessage(message);
     }
