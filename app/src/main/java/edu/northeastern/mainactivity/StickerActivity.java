@@ -1,5 +1,6 @@
 package edu.northeastern.mainactivity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -11,8 +12,12 @@ import android.widget.Spinner;
 //import com.bumptech.glide.Glide;
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,8 +39,6 @@ public class StickerActivity extends AppCompatActivity {
 
     // This is important please don't create a new instance of firebaseManager , use the instance by ,getInstance()
     private FirebaseManager firebaseManager = FirebaseManager.getInstance();
-
-
 
     private MainAPI mainAPI;
     @Override
@@ -77,15 +80,30 @@ public class StickerActivity extends AppCompatActivity {
         img = findViewById(R.id.img);
 
 
-        // Replace by usernames/emails
-        String[] temp = new String[] {
-                "1", "2", "3", "4", "5"
-        };
-
+        FirebaseDatabase database = FirebaseDatabase.getInstance("https://a6group9-default-rtdb.firebaseio.com/");
+        DatabaseReference userEmailsRef = database.getReference("UserEmails");
+        List<String> userEmails = new ArrayList<>();
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, temp);
+                android.R.layout.simple_spinner_item, userEmails);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         usersDropdown.setAdapter(adapter);
+
+        userEmailsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                userEmails.clear();
+                for (DataSnapshot emailSnapshot: dataSnapshot.getChildren()) {
+                    String email = emailSnapshot.getValue(String.class);
+                    userEmails.add(email);
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         stickersBtn.setOnClickListener(v -> {
             StickersTabFragment stickersTabFragment = new StickersTabFragment();
@@ -121,9 +139,6 @@ public class StickerActivity extends AppCompatActivity {
     /**
      * Fetching the stickers
      * */
-
-
-
     // to get stickers
     private void getStickerGroups() {
         mainAPI = new MainAPI();
