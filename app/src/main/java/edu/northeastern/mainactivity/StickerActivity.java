@@ -114,29 +114,11 @@ public class StickerActivity extends AppCompatActivity {
             }
         });
 
+
         usersDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String targetEmail = usersDropdown.getSelectedItem().toString();
-                getUidFromEmail(targetEmail).thenAccept(uid -> {
-                    if(uid != null && firebaseUser.getUid() != null) {  // check that the uid's are not null
-                        getEntireConversationUserAUserB(firebaseUser.getUid(), uid)
-                                .thenAccept(messages -> {
-                                    runOnUiThread(() -> {
-                                        conversation = messages;
-                                        chatAdapter = new ChatAdapter(conversation, firebaseUser.getUid());
-                                        chatRecyclerView.setAdapter(chatAdapter);
-                                    });
-                                }).exceptionally(ex -> {
-                                    Log.e("Messages", "Error loading messages", ex);
-                                    return null;
-                                });
-                    } else {
-                        Log.e("UID", "Uid is null");
-                    }
-                }).exceptionally(e -> {
-                    Log.e("UID", "Error getting uid", e);
-                    return null;
-                });
+                refreshConversation(targetEmail);
             }
 
             @Override
@@ -144,6 +126,38 @@ public class StickerActivity extends AppCompatActivity {
 
             }
         });
+
+
+//        usersDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                String targetEmail = usersDropdown.getSelectedItem().toString();
+//                getUidFromEmail(targetEmail).thenAccept(uid -> {
+//                    if(uid != null && firebaseUser.getUid() != null) {  // check that the uid's are not null
+//                        getEntireConversationUserAUserB(firebaseUser.getUid(), uid)
+//                                .thenAccept(messages -> {
+//                                    runOnUiThread(() -> {
+//                                        conversation = messages;
+//                                        chatAdapter = new ChatAdapter(conversation, firebaseUser.getUid());
+//                                        chatRecyclerView.setAdapter(chatAdapter);
+//                                    });
+//                                }).exceptionally(ex -> {
+//                                    Log.e("Messages", "Error loading messages", ex);
+//                                    return null;
+//                                });
+//                    } else {
+//                        Log.e("UID", "Uid is null");
+//                    }
+//                }).exceptionally(e -> {
+//                    Log.e("UID", "Error getting uid", e);
+//                    return null;
+//                });
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//
+//            }
+//        });
 
 
 
@@ -198,8 +212,10 @@ public class StickerActivity extends AppCompatActivity {
                             receiverID = userSnapshot.child("userID").getValue(String.class);
                             Log.d("userID", receiverID);
                             sendMessage(senderID, receiverID, stickerUrl);
+                            refreshConversation(targetEmail);
                             break;
                         }
+
                     }
                 }
 
@@ -211,6 +227,35 @@ public class StickerActivity extends AppCompatActivity {
         }
     }
 
+
+    ///
+
+    private void refreshConversation(String targetEmail) {
+        FirebaseUser firebaseUser = firebaseManager.getLoggedInUser();
+        String senderID = firebaseUser.getUid();
+        if (!targetEmail.equals("Select a user")) {
+            getUidFromEmail(targetEmail).thenAccept(uid -> {
+                if (uid != null && firebaseUser.getUid() != null) {
+                    getEntireConversationUserAUserB(firebaseUser.getUid(), uid)
+                            .thenAccept(messages -> {
+                                runOnUiThread(() -> {
+                                    conversation = messages;
+                                    chatAdapter = new ChatAdapter(conversation, firebaseUser.getUid());
+                                    chatRecyclerView.setAdapter(chatAdapter);
+                                });
+                            }).exceptionally(ex -> {
+                                Log.e("Messages", "Error loading messages", ex);
+                                return null;
+                            });
+                } else {
+                    Log.e("UID", "Uid is null");
+                }
+            }).exceptionally(e -> {
+                Log.e("UID", "Error getting uid", e);
+                return null;
+            });
+        }
+    }
 
     /***
      *
