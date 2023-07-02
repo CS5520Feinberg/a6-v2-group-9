@@ -46,6 +46,7 @@ public class StickerActivity extends AppCompatActivity {
     private RecyclerView chatRecyclerView;
 
     private Button historyBtn;
+    private Button countBtn;
 
     private MainAPI mainAPI;
     @Override
@@ -89,6 +90,7 @@ public class StickerActivity extends AppCompatActivity {
         usersDropdown = findViewById(R.id.usersDropdown);
         stickersBtn = findViewById(R.id.stickersBtn);
         historyBtn = findViewById(R.id.historyBtn);
+        countBtn = findViewById(R.id.countBtn);
 
         List<String> userEmails = new ArrayList<>();
         userEmails.add("Select a user");
@@ -119,27 +121,6 @@ public class StickerActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String targetEmail = usersDropdown.getSelectedItem().toString();
                 refreshConversation(targetEmail);
-//                 Log.d("TARGET_EMAIL",targetEmail);
-//                 getUidFromEmail(targetEmail).thenAccept(uid -> {
-//                     if(uid != null && firebaseUser.getUid() != null) {  // check that the uid's are not null
-//                         getEntireConversationUserAUserB(firebaseUser.getUid(), uid)
-//                                 .thenAccept(messages -> {
-//                                     runOnUiThread(() -> {
-//                                         conversation = messages;
-//                                         chatAdapter = new ChatAdapter(conversation, firebaseUser.getUid());
-//                                         chatRecyclerView.setAdapter(chatAdapter);
-//                                     });
-//                                 }).exceptionally(ex -> {
-//                                     Log.e("Messages", "Error loading messages", ex);
-//                                     return null;
-//                                 });
-//                     } else {
-//                         Log.e("UID", "Uid is null");
-//                     }
-//                 }).exceptionally(e -> {
-//                     Log.e("UID", "Error getting uid", e);
-//                     return null;
-//                 });
             }
 
             @Override
@@ -148,40 +129,6 @@ public class StickerActivity extends AppCompatActivity {
             }
         });
 
-
-//        usersDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                String targetEmail = usersDropdown.getSelectedItem().toString();
-//                getUidFromEmail(targetEmail).thenAccept(uid -> {
-//                    if(uid != null && firebaseUser.getUid() != null) {  // check that the uid's are not null
-//                        getEntireConversationUserAUserB(firebaseUser.getUid(), uid)
-//                                .thenAccept(messages -> {
-//                                    runOnUiThread(() -> {
-//                                        conversation = messages;
-//                                        chatAdapter = new ChatAdapter(conversation, firebaseUser.getUid());
-//                                        chatRecyclerView.setAdapter(chatAdapter);
-//                                    });
-//                                }).exceptionally(ex -> {
-//                                    Log.e("Messages", "Error loading messages", ex);
-//                                    return null;
-//                                });
-//                    } else {
-//                        Log.e("UID", "Uid is null");
-//                    }
-//                }).exceptionally(e -> {
-//                    Log.e("UID", "Error getting uid", e);
-//                    return null;
-//                });
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//
-//            }
-//        });
-
-
-
         stickersBtn.setOnClickListener(v -> {
             StickersTabFragment stickersTabFragment = new StickersTabFragment();
             stickersTabFragment.show(getSupportFragmentManager(), stickersTabFragment.getTag());
@@ -189,8 +136,12 @@ public class StickerActivity extends AppCompatActivity {
 
         //launch history tab//
         historyBtn.setOnClickListener(v -> {
-            getCountStickers(firebaseUser.getUid());
             Intent intent = new Intent(this, HistoryActivity.class);
+            startActivity(intent);
+        });
+
+        countBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(this, CountActivity.class);
             startActivity(intent);
         });
     }
