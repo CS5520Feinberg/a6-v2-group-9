@@ -11,12 +11,14 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.annotations.Nullable;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
@@ -135,6 +137,50 @@ public class FirebaseManager {
             }
         });
         return future;
+    }
+
+    public void setupMessagesListener(String currentUserId) {
+        DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference("messages");
+
+        ChildEventListener childEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                Message message = snapshot.getValue(Message.class);
+                String senderId = message.getsender();
+
+                if (senderId.equals(currentUserId)) {
+                    // Update the view with the received message
+                    // Add the message to your conversation list or update the UI
+                    // ...
+
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                // Handle changes to existing messages if necessary
+                // This can include updates to properties or nested child nodes
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                // Handle removal of messages if necessary
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                // Handle moving of messages if necessary
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle any error that occurred during the listener
+            }
+        };
+
+        // Attach the child event listener to the "received" node under "messages"
+        DatabaseReference receivedMessagesRef = messagesRef.child("received");
+        receivedMessagesRef.addChildEventListener(childEventListener);
     }
 
 

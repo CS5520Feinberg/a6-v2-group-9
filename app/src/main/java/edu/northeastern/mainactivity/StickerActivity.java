@@ -16,12 +16,14 @@ import android.widget.Spinner;
 //import com.bumptech.glide.Glide;
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -119,27 +121,13 @@ public class StickerActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String targetEmail = usersDropdown.getSelectedItem().toString();
                 refreshConversation(targetEmail);
-//                 Log.d("TARGET_EMAIL",targetEmail);
-//                 getUidFromEmail(targetEmail).thenAccept(uid -> {
-//                     if(uid != null && firebaseUser.getUid() != null) {  // check that the uid's are not null
-//                         getEntireConversationUserAUserB(firebaseUser.getUid(), uid)
-//                                 .thenAccept(messages -> {
-//                                     runOnUiThread(() -> {
-//                                         conversation = messages;
-//                                         chatAdapter = new ChatAdapter(conversation, firebaseUser.getUid());
-//                                         chatRecyclerView.setAdapter(chatAdapter);
-//                                     });
-//                                 }).exceptionally(ex -> {
-//                                     Log.e("Messages", "Error loading messages", ex);
-//                                     return null;
-//                                 });
-//                     } else {
-//                         Log.e("UID", "Uid is null");
-//                     }
-//                 }).exceptionally(e -> {
-//                     Log.e("UID", "Error getting uid", e);
-//                     return null;
-//                 });
+
+                // Get the current user ID here
+                String currentUserId = firebaseManager.getLoggedInUser().getUid();
+
+                // Call setupReceivedMessagesListener with the current user ID
+                setupMessagesListener(currentUserId);
+
             }
 
             @Override
@@ -186,6 +174,9 @@ public class StickerActivity extends AppCompatActivity {
             StickersTabFragment stickersTabFragment = new StickersTabFragment();
             stickersTabFragment.show(getSupportFragmentManager(), stickersTabFragment.getTag());
         });
+
+
+
     }
 
     private CompletableFuture<String> getUidFromEmail(String targetEmail) {
@@ -215,6 +206,56 @@ public class StickerActivity extends AppCompatActivity {
         return futureUid;
     }
 
+    public void setupMessagesListener(String currentUserId) {
+//        DatabaseReference messagesRef = FirebaseDatabase.getInstance("https://a6group9-default-rtdb.firebaseio.com/").getReference("messages");
+        DatabaseReference messagesRef = FirebaseDatabase.getInstance("https://a6group9-default-rtdb.firebaseio.com/")
+                .getReference("messages/received/" + firebaseManager.getLoggedInUser().getUid());
+        Log.d("UPDATE", "SOMETHING GOT ADDED122334455");
+        ChildEventListener childEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                Message message = snapshot.getValue(Message.class);
+                String senderId = message.getsender();
+                Log.d("UPDATE", "SOMETHING GOT ADDED");
+
+//                if (senderId.equals(currentUserId)) {
+//                    // Update the view with the received message
+//                    // Add the message to your conversation list or update the UI
+//                    // ...
+                    refreshConversation(firebaseManager.getLoggedInUser().getEmail());
+
+//                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                // Handle changes to existing messages if necessary
+                // This can include updates to properties or nested child nodes
+                Log.d("UPDATE", "SOMETHING GOT ADDED");
+                refreshConversation(firebaseManager.getLoggedInUser().getEmail());
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                // Handle removal of messages if necessary
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                // Handle moving of messages if necessary
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle any error that occurred during the listener
+            }
+        };
+
+        // Attach the child event listener to the "received" node under "messages"
+        DatabaseReference receivedMessagesRef = messagesRef.child("received");
+        receivedMessagesRef.addChildEventListener(childEventListener);
+    }
+
     public void onStickerSelected(String stickerUrl) {
         Log.d("StickerActivity", "Selected sticker URL: " + stickerUrl);
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://a6group9-default-rtdb.firebaseio.com/");
@@ -233,7 +274,6 @@ public class StickerActivity extends AppCompatActivity {
                             receiverID = userSnapshot.child("userID").getValue(String.class);
                             sendMessage(senderID, receiverID, stickerUrl,email,senderID);
                             refreshConversation(targetEmail);
-                          
                             break;
                         }
 
@@ -246,6 +286,50 @@ public class StickerActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+
+
+    public void setupMessagesListenerTest(String currentUserId) {
+        DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference("messages");
+
+        ChildEventListener childEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                Message message = snapshot.getValue(Message.class);
+                String senderId = message.getsender();
+
+                if (senderId.equals(currentUserId)) {
+                    refreshConversation(firebaseManager.getLoggedInUser().getEmail());
+
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                // Handle changes to existing messages if necessary
+                // This can include updates to properties or nested child nodes
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                // Handle removal of messages if necessary
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                // Handle moving of messages if necessary
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle any error that occurred during the listener
+            }
+        };
+
+        // Attach the child event listener to the "received" node under "messages"
+        DatabaseReference receivedMessagesRef = messagesRef.child("received");
+        receivedMessagesRef.addChildEventListener(childEventListener);
     }
 
 
@@ -277,6 +361,9 @@ public class StickerActivity extends AppCompatActivity {
             });
         }
     }
+
+
+
 
     /***
      *
