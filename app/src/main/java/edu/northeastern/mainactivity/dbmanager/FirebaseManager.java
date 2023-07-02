@@ -1,5 +1,7 @@
 package edu.northeastern.mainactivity.dbmanager;
 
+import static android.content.ContentValues.TAG;
+
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -105,6 +107,7 @@ public class FirebaseManager {
                 if (task.isSuccessful()) {
                     FirebaseUser loggedInUser = auth.getCurrentUser(); // Store the registered/authenticated user in the static variable
                     LoggedInUser = loggedInUser;
+
                     saveDeviceToken(new CompletionHandler<String>() {
                         @Override
                         public void onSuccess(String deviceToken) {
@@ -150,6 +153,7 @@ public class FirebaseManager {
                     FirebaseUser loggedInUser = auth.getCurrentUser(); // Store the authenticated user in the static variable
                     LoggedInUser = loggedInUser;
                     Log.d("LOGGEDIN", "User created! User: " + loggedInUser + " email: " + loggedInUser.getEmail() + " uid: " + loggedInUser.getUid());
+                    saveDeviceToken(loggedInUser.getEmail().replace('.','t'));
                     future.complete(loggedInUser); // Complete the future with the logged-in user
                 } else {
                     Log.w("LOGIN FAILED", "Login failed!", task.getException());
@@ -315,6 +319,29 @@ public class FirebaseManager {
                     } else {
                         completionHandler.onError(task.getException());
                     }
+                });
+    }
+    private static void saveDeviceToken(String userId) {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                        return;
+                    }
+                    String deviceToken = task.getResult();
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference userRef = database.getReference("UserInfo").child(userId);
+                    userRef.child("deviceToken").setValue(deviceToken)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Log.d(TAG, "Device token saved for user: " + userId);
+                                    } else {
+                                        Log.w(TAG, "Failed to save device token for user: " + userId);
+                                    }
+                                }
+                            });
                 });
     }
 
