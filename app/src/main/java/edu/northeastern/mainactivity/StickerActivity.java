@@ -12,11 +12,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Spinner;
 
-//import com.bumptech.glide.Glide;
-import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.auth.FirebaseUser;
@@ -29,14 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-
-import edu.northeastern.mainactivity.apis.GetReceivedMessageAPI;
-import edu.northeastern.mainactivity.apis.GetSentMessagesAPI;
 import edu.northeastern.mainactivity.apis.MainAPI;
 import edu.northeastern.mainactivity.apis.SendNotification;
 import edu.northeastern.mainactivity.dbmanager.FirebaseManager;
 import edu.northeastern.mainactivity.entity.Notification;
-import edu.northeastern.mainactivity.interfaces.StickerGroupsCallback;
 import edu.northeastern.mainactivity.modals.Message;
 
 public class StickerActivity extends AppCompatActivity {

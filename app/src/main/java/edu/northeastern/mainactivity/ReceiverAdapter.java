@@ -11,7 +11,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import edu.northeastern.mainactivity.modals.Message;
 
@@ -35,6 +38,11 @@ public class ReceiverAdapter extends RecyclerView.Adapter<ReceiverAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Message message = messages.get(position);
         holder.nameTextView.setText(message.getsender());
+        long timestamp = message.getTimestamp();
+        Date date = new Date(timestamp);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        String formattedDate = sdf.format(date);
+        holder.timestampTextView.setText(formattedDate);
         Glide.with(holder.stickerImageView.getContext())
                 .load(message.getImageUrl())
                 .into(holder.stickerImageView);
@@ -52,12 +60,14 @@ public class ReceiverAdapter extends RecyclerView.Adapter<ReceiverAdapter.ViewHo
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView stickerImageView;
         TextView nameTextView;
+        TextView timestampTextView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             stickerImageView = itemView.findViewById(R.id.history_sticker);
             nameTextView = itemView.findViewById(R.id.history_name);
+            timestampTextView = itemView.findViewById(R.id.timestamp);
         }
     }
 }
