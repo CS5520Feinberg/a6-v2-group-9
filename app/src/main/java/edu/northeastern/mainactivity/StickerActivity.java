@@ -145,6 +145,7 @@ public class StickerActivity extends AppCompatActivity {
         DatabaseReference userInfoRef = database.getReference("UserInfo");
         FirebaseUser firebaseUser = firebaseManager.getLoggedInUser();
         String senderID = firebaseUser.getUid();
+
         if (!usersDropdown.getSelectedItem().toString().equals("Select a user")) {
             String targetEmail = usersDropdown.getSelectedItem().toString();
             userInfoRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -155,7 +156,7 @@ public class StickerActivity extends AppCompatActivity {
                         String email = userSnapshot.child("email").getValue(String.class);
                         if (targetEmail.equals(email)) {
                             receiverID = userSnapshot.child("userID").getValue(String.class);
-                            sendMessage(senderID, receiverID, stickerUrl,email,senderID);
+                            sendMessage(senderID, receiverID, stickerUrl,email,firebaseUser.getEmail());
                             refreshConversation(targetEmail);
                             break;
                         }

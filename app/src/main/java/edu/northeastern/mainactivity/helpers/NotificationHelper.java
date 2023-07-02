@@ -51,23 +51,19 @@ public class NotificationHelper extends FirebaseMessagingService {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "channel_id")
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle(title)
-                .setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-        // Set big picture style with the loaded image
+        // internet help
         if (bitmap != null) {
             NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle()
                     .bigPicture(bitmap)
-                    .setBigContentTitle(title)
-                    .setSummaryText(message);
+                    .setBigContentTitle(title);
             builder.setStyle(bigPictureStyle);
         }
 
-        // Show notification
+
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
             return;
         }
         notificationManager.notify(0, builder.build());
