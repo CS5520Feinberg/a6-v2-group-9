@@ -44,9 +44,9 @@ public class ReceiverAdapter extends RecyclerView.Adapter<ReceiverAdapter.ViewHo
         Message message = messages.get(position);
         getEmailFromUid(message.getsender(), email -> {
             if (email != null) {
-                holder.nameTextView.setText(String.format("To: %s", email));
+                holder.nameTextView.setText(String.format("From: %s", email));
             } else {
-                holder.nameTextView.setText("To: ");
+                holder.nameTextView.setText("From: ");
             }
         });
         long timestamp = message.getTimestamp();

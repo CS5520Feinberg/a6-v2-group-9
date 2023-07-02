@@ -83,7 +83,9 @@ public class StickerActivity extends AppCompatActivity {
 
 
         chatRecyclerView = findViewById(R.id.stickerRecyclerView);
-        chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setStackFromEnd(true);
+        chatRecyclerView.setLayoutManager(layoutManager);
         usersDropdown = findViewById(R.id.usersDropdown);
         stickersBtn = findViewById(R.id.stickersBtn);
         historyBtn = findViewById(R.id.historyBtn);
