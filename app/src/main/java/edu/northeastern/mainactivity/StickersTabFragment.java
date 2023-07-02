@@ -36,15 +36,12 @@ public class StickersTabFragment extends BottomSheetDialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
-
         fetchStickerUrls(recyclerView);
     }
 
     private void fetchStickerUrls(RecyclerView recyclerView) {
-
         stickersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -58,10 +55,8 @@ public class StickersTabFragment extends BottomSheetDialogFragment {
                 StickerAdapter adapter = new StickerAdapter(stickerUrls, stickerUrl -> ((StickerActivity)getActivity()).onStickerSelected(stickerUrl));
                 recyclerView.setAdapter(adapter);
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }

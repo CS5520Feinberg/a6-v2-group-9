@@ -51,37 +51,8 @@ public class StickerActivity extends AppCompatActivity {
     private MainAPI mainAPI;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //lin.kevin1@northeastern.edu
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sticker);
-
-        /**
-         * All the functions to be used for fetching from DB are explained below - follow the same
-         * */
-
-        // initializing the stickers from the DB
-        firebaseManager.initializeDefaultStickerGroups();
-
-        FirebaseUser firebaseUser = firebaseManager.getLoggedInUser();
-
-        Log.d("USER INFO ", "" + firebaseUser.getUid());     // or .getEmail()
-
-
-        /***
-         * Testing some more things
-         */
-
-        getStickerGroups();
-
-        //getEntireConversationUSerAUserB();
-
-
-
-        /***
-         * End of backend related statements in on-Create function
-         */
-
 
         chatRecyclerView = findViewById(R.id.stickerRecyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -116,13 +87,11 @@ public class StickerActivity extends AppCompatActivity {
             }
         });
 
-
         usersDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String targetEmail = usersDropdown.getSelectedItem().toString();
                 refreshConversation(targetEmail);
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
@@ -134,7 +103,6 @@ public class StickerActivity extends AppCompatActivity {
             stickersTabFragment.show(getSupportFragmentManager(), stickersTabFragment.getTag());
         });
 
-        //launch history tab//
         historyBtn.setOnClickListener(v -> {
             Intent intent = new Intent(this, HistoryActivity.class);
             startActivity(intent);
@@ -148,7 +116,7 @@ public class StickerActivity extends AppCompatActivity {
 
     private CompletableFuture<String> getUidFromEmail(String targetEmail) {
         CompletableFuture<String> futureUid = new CompletableFuture<>();
-        FirebaseDatabase database = FirebaseDatabase.getInstance("https://a6group9-default-rtdb.firebaseio.com/");
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference userInfoRef = database.getReference("UserInfo");
         userInfoRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -163,13 +131,11 @@ public class StickerActivity extends AppCompatActivity {
                 }
                 futureUid.complete(uid);
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 futureUid.completeExceptionally(error.toException());
             }
         });
-
         return futureUid;
     }
 
@@ -191,27 +157,20 @@ public class StickerActivity extends AppCompatActivity {
                             receiverID = userSnapshot.child("userID").getValue(String.class);
                             sendMessage(senderID, receiverID, stickerUrl,email,senderID);
                             refreshConversation(targetEmail);
-                          
                             break;
                         }
 
                     }
                 }
-
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-
                 }
             });
         }
     }
 
-
-    ///
-
     private void refreshConversation(String targetEmail) {
         FirebaseUser firebaseUser = firebaseManager.getLoggedInUser();
-        String senderID = firebaseUser.getUid();
         if (!targetEmail.equals("Select a user")) {
             getUidFromEmail(targetEmail).thenAccept(uid -> {
                 if (uid != null && firebaseUser.getUid() != null) {
@@ -247,39 +206,12 @@ public class StickerActivity extends AppCompatActivity {
 
     // Send message
     public void sendMessage(String senderUid, String receiverUid, String stickerTokenURL, String receiverEmail, String senderEmail)  {
-//        Message message = new Message( "JcvHYO1eEkftiVELHEER07BkWO22", "Zaq7p6ZL8aaGy4J5rKnUKZDtPwf1", System.currentTimeMillis(), "https://firebasestorage.googleapis.com/v0/b/a6group9.appspot.com/o/crying1.png?alt=media&token=12cb5542-3ccb-4ed7-a197-7aefc9f4c8dd" );
-
         Message message = new Message(senderUid, receiverUid, System.currentTimeMillis(), stickerTokenURL);
         Log.d("SENDING:", String.valueOf(message));
         SendNotification sendNotification = new SendNotification(new Notification(senderEmail,receiverEmail,""+System.currentTimeMillis(),stickerTokenURL));
         Log.d("SENDING:", String.valueOf(sendNotification));
         sendNotification.sendNotificationToFireBase();
         firebaseManager.addMessage(message);
-    }
-
-
-
-    /**
-     * Fetching the stickers
-     * */
-    // to get stickers
-    private void getStickerGroups() {
-        mainAPI = new MainAPI();
-        CompletableFuture<Map<String, List<String>>> stickerGroupsFuture = mainAPI.fetchStickerGroups();
-
-        stickerGroupsFuture.thenAccept(stickerGroups -> {
-            // Access the fetched sticker groups here
-            Log.d("HAHAHA WORKEDDDDD", "PRINTING STICKERS" + stickerGroups);
-
-            // Call any other methods
-            // eg. useStickers(stickerGroups)
-        }).exceptionally(ex -> {
-            // Handle error if sticker groups loading fails
-            Log.e("Sticker Groups", "Error loading sticker groups", ex);
-            return null;
-        });
-
-        // Continue with other operations or return from the method without waiting
     }
 
     /***
@@ -306,59 +238,4 @@ public class StickerActivity extends AppCompatActivity {
         // Continue with other operations or return from the method without waiting
         return messagesFuture;
     }
-
-    /***
-     * All sent messages of userA irrespective of to whom they are sent
-     */
-    private void getAllSentMessageSingleUser() {
-        mainAPI = new MainAPI();
-        CompletableFuture<List<Message>> messagesFuture = mainAPI.getSentMessagesSingleUser("Zaq7p6ZL8aaGy4J5rKnUKZDtPwf1");
-
-        messagesFuture.thenAccept(messages -> {
-            // Access the fetched messages here
-            Log.d("SINGE MESSAGES", "HAHAHAH" + messages);
-//            handleMessages(messages);
-
-            // Call any other methods or perform actions based on messages
-            // ...
-        }).exceptionally(ex -> {
-            // Handle error if message loading fails
-            Log.e("Messages", "Error loading messages", ex);
-            return null;
-        });
-
-        // Continue with other operations or return from the method without waiting
-    }
-
-    /***
-     * get count of sticker types used by a user A
-     */
-    private void getCountStickers(String userId) {
-        mainAPI = new MainAPI();
-        CompletableFuture<Map<String, List<String>>> stickerGroupsFuture = mainAPI.fetchStickerGroups();
-        CompletableFuture<List<Message>> messagesFuture = mainAPI.getSentMessagesSingleUser(userId);
-
-        CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(stickerGroupsFuture, messagesFuture);
-
-        combinedFuture.thenRun(() -> {
-            Map<String, List<String>> stickerGroups = stickerGroupsFuture.join();
-            List<Message> sentMessages = messagesFuture.join();
-
-            // Call the getStickerCount method with the fetched sticker groups and sent messages
-            Map<String, Integer> count = mainAPI.getStickerCount(stickerGroups, sentMessages);
-
-            // Print the sticker count for each group
-            for (String stickerGroup : count.keySet()) {
-                int c = count.get(stickerGroup);
-                Log.d("TESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTEST", "Sticker Group: " + stickerGroup + ", Count: " + c);
-            }
-        }).exceptionally(ex -> {
-            // Handle error if fetching sticker groups or messages fails
-            Log.e("Fetch Error", "Error fetching sticker groups or messages", ex);
-            return null;
-        });
-
-        // Continue with other operations or return from the method without waiting
-    }
-
 }
