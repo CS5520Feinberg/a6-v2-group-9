@@ -11,6 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,7 +43,13 @@ public class SenderAdapter extends RecyclerView.Adapter<SenderAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Message message = messages.get(position);
-        holder.nameTextView.setText(message.getreceiver());
+        getEmailFromUid(message.getreceiver(), email -> {
+            if (email != null) {
+                holder.nameTextView.setText(String.format("To: %s", email));
+            } else {
+                holder.nameTextView.setText("To: ");
+            }
+        });
         long timestamp = message.getTimestamp();
         Date date = new Date(timestamp);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
@@ -70,5 +81,33 @@ public class SenderAdapter extends RecyclerView.Adapter<SenderAdapter.ViewHolder
             nameTextView = itemView.findViewById(R.id.history_name);
             timestampTextView = itemView.findViewById(R.id.timestamp);
         }
+    }
+
+    private void getEmailFromUid(String targetUid, EmailCallback callback) {
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        DatabaseReference userInfoRef = db.getReference("UserInfo");
+
+        userInfoRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String email = null;
+                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                    String uid = userSnapshot.child("userID").getValue(String.class);
+                    if (targetUid.equals(uid)) {
+                        email = userSnapshot.child("email").getValue(String.class);
+                        break;
+                    }
+                }
+                callback.onEmailReceived(email);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                callback.onEmailReceived(null);
+            }
+        });
+    }
+
+    interface EmailCallback {
+        void onEmailReceived(String email);
     }
 }

@@ -52,7 +52,10 @@ public class SenderFragment extends Fragment {
         View view = inflater.inflate(R.layout.recycler_view_history_sent, container, false);
 
         recyclerView = view.findViewById(R.id.sent_recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(layoutManager);
 
         adapter = new SenderAdapter(messages);
         recyclerView.setAdapter(adapter);

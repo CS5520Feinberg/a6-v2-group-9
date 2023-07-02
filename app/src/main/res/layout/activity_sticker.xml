@@ -12,6 +12,11 @@
         android:layout_height="50dp"
         android:layout_margin="20dp"
         android:layout_marginTop="40dp"
+        android:background="@drawable/spinner_background"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textColor="@color/black"
+        android:textSize="16sp"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView

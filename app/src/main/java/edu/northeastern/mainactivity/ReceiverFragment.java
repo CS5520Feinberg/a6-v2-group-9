@@ -52,7 +52,10 @@ public class ReceiverFragment extends Fragment {
         View view = inflater.inflate(R.layout.recycler_view_history_received, container, false);
 
         recyclerView = view.findViewById(R.id.received_recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(layoutManager);
 
         adapter = new ReceiverAdapter(messages);
         recyclerView.setAdapter(adapter);
