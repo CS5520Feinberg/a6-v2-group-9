@@ -251,6 +251,29 @@ public class FirebaseManager {
         });
     }
 
+    public void getAllReceivedMessagesForUser(String receiverId, final ReceivedMessagesCallback callback) {
+        DatabaseReference receivedRef = messagesRef.child("received").child(receiverId);
+
+        receivedRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Map<String, Message> receivedMessages = new HashMap<>();
+
+                for (DataSnapshot messageSnapshot : dataSnapshot.getChildren()) {
+                    String messageId = messageSnapshot.getKey();
+                    Message message = messageSnapshot.getValue(Message.class);
+                    receivedMessages.put(messageId, message);
+                }
+                callback.onReceivedMessagesLoaded(receivedMessages);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     public void getSentMessagesForUser(String senderId, String receiverId, final SentMessagesCallback callback) {
         DatabaseReference sentRef = messagesRef.child("sent").child(senderId);
         Query query = sentRef.orderByChild("receiver").equalTo(receiverId);
