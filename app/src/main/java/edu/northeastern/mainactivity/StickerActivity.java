@@ -194,6 +194,7 @@ public class StickerActivity extends AppCompatActivity {
 
         //launch history tab//
         historyBtn.setOnClickListener(v -> {
+            getCountStickers(firebaseUser.getUid());
             Intent intent = new Intent(this, HistoryActivity.class);
             startActivity(intent);
         });
@@ -386,10 +387,10 @@ public class StickerActivity extends AppCompatActivity {
     /***
      * get count of sticker types used by a user A
      */
-    private void getCountStickers() {
+    private void getCountStickers(String userId) {
         mainAPI = new MainAPI();
         CompletableFuture<Map<String, List<String>>> stickerGroupsFuture = mainAPI.fetchStickerGroups();
-        CompletableFuture<List<Message>> messagesFuture = mainAPI.getSentMessagesSingleUser("Zaq7p6ZL8aaGy4J5rKnUKZDtPwf1");
+        CompletableFuture<List<Message>> messagesFuture = mainAPI.getSentMessagesSingleUser(userId);
 
         CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(stickerGroupsFuture, messagesFuture);
 
@@ -403,7 +404,7 @@ public class StickerActivity extends AppCompatActivity {
             // Print the sticker count for each group
             for (String stickerGroup : count.keySet()) {
                 int c = count.get(stickerGroup);
-                Log.d("Sticker Count", "Sticker Group: " + stickerGroup + ", Count: " + c);
+                Log.d("TESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTEST", "Sticker Group: " + stickerGroup + ", Count: " + c);
             }
         }).exceptionally(ex -> {
             // Handle error if fetching sticker groups or messages fails

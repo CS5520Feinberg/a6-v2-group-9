@@ -78,6 +78,19 @@ public class MainAPI {
         return combined;
     }
 
+    public CompletableFuture<List<Message>> getReceivedMessagesSingleUser(String userA) {
+        CompletableFuture<Map<String, Message>> messages = CompletableFuture.supplyAsync(() -> {
+            GetReceivedMessageAPI getReceivedMessageAPI = new GetReceivedMessageAPI();
+            return getReceivedMessageAPI.getAllReceivedMessagesSingleUser(userA).join();
+        });
+
+        CompletableFuture<List<Message>> combined = messages.thenApply(map -> {
+            return getSortedMessages(map);
+        });
+
+        return combined;
+    }
+
 
 
 
