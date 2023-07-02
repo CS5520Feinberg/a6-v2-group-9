@@ -5,11 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
@@ -50,6 +52,8 @@ public class StickerActivity extends AppCompatActivity {
     private ChatAdapter chatAdapter;
     private RecyclerView chatRecyclerView;
 
+    private Button historyBtn;
+
     private MainAPI mainAPI;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +93,7 @@ public class StickerActivity extends AppCompatActivity {
         chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         usersDropdown = findViewById(R.id.usersDropdown);
         stickersBtn = findViewById(R.id.stickersBtn);
+        historyBtn = findViewById(R.id.historyBtn);
 
         List<String> userEmails = new ArrayList<>();
         userEmails.add("Select a user");
@@ -185,6 +190,12 @@ public class StickerActivity extends AppCompatActivity {
         stickersBtn.setOnClickListener(v -> {
             StickersTabFragment stickersTabFragment = new StickersTabFragment();
             stickersTabFragment.show(getSupportFragmentManager(), stickersTabFragment.getTag());
+        });
+
+        //launch history tab//
+        historyBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(this, HistoryActivity.class);
+            startActivity(intent);
         });
     }
 
@@ -402,7 +413,5 @@ public class StickerActivity extends AppCompatActivity {
 
         // Continue with other operations or return from the method without waiting
     }
-
-
 
 }
